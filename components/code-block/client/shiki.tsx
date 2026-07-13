@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState, type ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
+import { getShikiTransformers } from "@/utils/shiki/get-transformers"
 import { highlight, Themes, type Languages } from "@/utils/shiki/highlight"
-import { wordWrapContent } from "@/utils/shiki/transformers/word-wrap"
 
 interface CodeblockClientShikiProps extends ComponentProps<"div"> {
   code: string
@@ -29,6 +29,7 @@ const CodeblockShiki = ({
     initialHtml ?? null,
   )
   const skipInitialHighlightRef = useRef(Boolean(initialHtml))
+  const shouldWordWrap = wordWrap && !lineNumbers
 
   useEffect(() => {
     if (skipInitialHighlightRef.current) {
@@ -48,18 +49,7 @@ const CodeblockShiki = ({
           light: Themes.light,
           dark: Themes.dark,
         },
-        transformers: [
-          ...(wordWrap ? [wordWrapContent()] : []),
-          {
-            name: "AddLineNumbers",
-            pre(node) {
-              if (lineNumbers) {
-                const shikiStyles = node.properties.class
-                node.properties.class = `${shikiStyles} shiki-line-numbers`
-              }
-            },
-          },
-        ],
+        transformers: getShikiTransformers({ lineNumbers, wordWrap }),
       })
       setHighlightedHtml(html)
     }
@@ -68,7 +58,7 @@ const CodeblockShiki = ({
 
   const classNames = cn(
     "w-full min-w-0",
-    !wordWrap && "overflow-x-auto overscroll-x-contain",
+    !shouldWordWrap && "overflow-x-auto overscroll-x-contain",
     className,
   )
 
@@ -80,7 +70,12 @@ const CodeblockShiki = ({
     />
   ) : (
     <div className={classNames} {...props}>
-      <pre className={cn("px-4 py-3", wordWrap && "whitespace-pre-wrap break-words")}>
+      <pre
+        className={cn(
+          "px-4 py-3",
+          shouldWordWrap && "whitespace-pre-wrap break-words",
+        )}
+      >
         <code>{code}</code>
       </pre>
     </div>

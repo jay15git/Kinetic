@@ -1,4 +1,4 @@
-import { wordWrapContent } from "@/utils/shiki/transformers/word-wrap"
+import { getShikiTransformers } from "@/utils/shiki/get-transformers"
 import { highlight, Themes, type Languages } from "@/utils/shiki/highlight"
 
 export async function codeToHighlightedHtml(
@@ -19,17 +19,6 @@ export async function codeToHighlightedHtml(
       light: Themes.light,
       dark: Themes.dark,
     },
-    transformers: [
-      ...(wordWrap ? [wordWrapContent()] : []),
-      {
-        name: "AddLineNumbers",
-        pre(node) {
-          if (lineNumbers) {
-            const shikiStyles = node.properties.class
-            node.properties.class = `${shikiStyles} shiki-line-numbers`
-          }
-        },
-      },
-    ],
+    transformers: getShikiTransformers({ lineNumbers, wordWrap }),
   })
 }

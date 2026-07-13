@@ -28,7 +28,10 @@ const headerCopyClassName =
   "landing-code-header flex min-w-0 flex-1 items-center justify-between gap-2 py-2.5 text-left"
 
 const contentClassName =
-  "min-w-0 max-w-full max-h-96 overflow-y-auto overflow-x-auto overscroll-contain bg-white font-mono text-[12.5px] leading-[1.7] tracking-[-0.01em] whitespace-pre-wrap [scrollbar-gutter:stable]"
+  "min-w-0 max-w-full max-h-96 overflow-y-auto overscroll-contain bg-white font-mono text-[12.5px] leading-[1.7] tracking-[-0.01em] [scrollbar-gutter:stable]"
+
+const contentClassNameScrollX =
+  "min-w-0 max-w-full max-h-96 overflow-x-auto overflow-y-auto overscroll-contain bg-white font-mono text-[12.5px] leading-[1.7] tracking-[-0.01em] [scrollbar-gutter:stable]"
 
 const fileContentClassName = "max-h-72"
 
@@ -189,11 +192,12 @@ export function CodeBlock({
   return (
     <div className={cn(shellClassName, className)}>
       <CodeBlockHeader label={label} copied={copied} onCopy={onCopy} />
-      <div className={contentClassName}>
+      <div className={lineNumbers ? contentClassNameScrollX : contentClassName}>
         <CodeblockShiki
           code={code}
           language={resolvedLanguage}
           lineNumbers={lineNumbers}
+          wordWrap={!lineNumbers}
           initialHtml={initialHighlightedHtml}
         />
       </div>
@@ -220,11 +224,12 @@ export function FileCodeBlock({
   return (
     <div className={cn(shellClassName, className)}>
       <CodeBlockHeader label={title} copied={copied} onCopy={onCopy} />
-      <div className={cn(contentClassName, fileContentClassName)}>
+      <div className={cn(contentClassNameScrollX, fileContentClassName)}>
         <CodeblockShiki
           code={code}
           language={resolvedLanguage}
           lineNumbers
+          wordWrap={false}
           initialHtml={initialHighlightedHtml}
         />
       </div>

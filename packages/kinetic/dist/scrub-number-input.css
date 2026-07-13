@@ -1,0 +1,182 @@
+/* Required for Calligraph slot clipping in ScrubNumberInput.
+   Import alongside scrub-number-input.tsx:
+     import "./scrub-number-input.css"
+*/
+
+[data-slot="scrub-number-calligraph-value"],
+[data-slot="scrub-number-calligraph-value"] .scrub-number-calligraph {
+  line-height: 1;
+  overflow: hidden;
+}
+
+[data-slot="scrub-number-calligraph-value"] {
+  color: inherit;
+}
+
+[data-slot="scrub-number-calligraph-value"] .scrub-number-calligraph,
+[data-slot="scrub-number-calligraph-value"] .scrub-number-calligraph * {
+  color: inherit;
+}
+
+[data-slot="scrub-number-calligraph-value"] .scrub-number-calligraph {
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+[data-slot="scrub-number-calligraph-value"] .scrub-number-calligraph > span {
+  align-items: center !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+[data-slot="scrub-number-calligraph-value"]
+  .scrub-number-calligraph
+  span[style*="vertical-align: top"] {
+  align-items: center !important;
+  display: inline-flex !important;
+  height: 1em !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  max-height: 1em !important;
+  overflow: hidden !important;
+  vertical-align: middle !important;
+}
+
+[data-slot="scrub-number-calligraph-value"]
+  .scrub-number-calligraph
+  span[style*="visibility: hidden"] {
+  font: inherit !important;
+  line-height: inherit !important;
+}
+
+/* Boundary feedback: border pulse on blocked attempt */
+@keyframes scrub-bound-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--ring) 45%, transparent);
+  }
+
+  100% {
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 0%, transparent);
+  }
+}
+
+[data-slot="scrub-bound-feedback"][data-bound-hit] [data-slot="input-group"],
+[data-slot="scrub-bound-feedback"][data-bound-hit] [data-slot="scrub-number-scrubbable"],
+[data-slot="scrub-bound-feedback"][data-bound-hit] [data-slot="input-group-control"] {
+  animation: scrub-bound-pulse 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="scrub-bound-feedback"][data-bound-hit] [data-slot="input-group"],
+  [data-slot="scrub-bound-feedback"][data-bound-hit] [data-slot="scrub-number-scrubbable"],
+  [data-slot="scrub-bound-feedback"][data-bound-hit] [data-slot="input-group-control"] {
+    animation: none;
+    box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 40%, transparent);
+  }
+}
+
+/* Boundary feedback: combo passive edge tint */
+[data-slot="scrub-bound-feedback"][data-at-bound] [data-slot="input-group"],
+[data-slot="scrub-bound-feedback"][data-at-bound] [data-slot="scrub-number-scrubbable"] {
+  background: color-mix(in oklch, var(--muted-foreground) 6%, transparent);
+  transition: background-color 0.15s ease-out;
+}
+
+/* Transitions.dev — bound-limit shake (adapted for scrub fields) */
+
+:root {
+  --scrub-bound-shake-distance: 6px;
+  --scrub-bound-shake-overshoot: 4px;
+  --scrub-bound-shake-dur-a: 80ms;
+  --scrub-bound-shake-dur-b: 60ms;
+  --scrub-bound-shake-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --scrub-bound-revert-hold: 600ms;
+  --scrub-bound-revert-dur: 280ms;
+  --scrub-bound-shake-color: var(--foreground);
+}
+
+.scrub-bound-field {
+  transition: border-color 150ms ease-out;
+  will-change: transform;
+}
+
+.scrub-bound-wrap.is-bound-error .scrub-bound-field {
+  border-color: var(--scrub-bound-shake-color);
+  transition: border-color var(--scrub-bound-revert-dur) ease-out;
+}
+
+.scrub-bound-field.is-shaking {
+  animation: scrub-bound-shake-x
+    calc(
+      var(--scrub-bound-shake-dur-a) * 2 + var(--scrub-bound-shake-dur-b) * 2
+    )
+    linear;
+}
+
+.scrub-bound-wrap[data-bound-direction="vertical"] .scrub-bound-field.is-shaking {
+  animation-name: scrub-bound-shake-y;
+}
+
+@keyframes scrub-bound-shake-x {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: var(--scrub-bound-shake-ease);
+  }
+
+  28.57% {
+    transform: translateX(var(--scrub-bound-shake-distance));
+    animation-timing-function: var(--scrub-bound-shake-ease);
+  }
+
+  57.14% {
+    transform: translateX(calc(var(--scrub-bound-shake-distance) * -1));
+    animation-timing-function: var(--scrub-bound-shake-ease);
+  }
+
+  78.57% {
+    transform: translateX(var(--scrub-bound-shake-overshoot));
+    animation-timing-function: var(--scrub-bound-shake-ease);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes scrub-bound-shake-y {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: var(--scrub-bound-shake-ease);
+  }
+
+  28.57% {
+    transform: translateY(var(--scrub-bound-shake-distance));
+    animation-timing-function: var(--scrub-bound-shake-ease);
+  }
+
+  57.14% {
+    transform: translateY(calc(var(--scrub-bound-shake-distance) * -1));
+    animation-timing-function: var(--scrub-bound-shake-ease);
+  }
+
+  78.57% {
+    transform: translateY(var(--scrub-bound-shake-overshoot));
+    animation-timing-function: var(--scrub-bound-shake-ease);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrub-bound-field.is-shaking {
+    animation: none !important;
+    transform: none !important;
+  }
+}

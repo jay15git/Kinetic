@@ -1,0 +1,70 @@
+{
+  "name": "kinetic",
+  "version": "0.1.0",
+  "description": "Figma-style scrub number field for React and shadcn/ui",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./scrub-number-input.css": "./dist/scrub-number-input.css"
+  },
+  "scripts": {
+    "build": "tsdown && node ./scripts/copy-assets.mjs",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "calligraph": "^1.4.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "lucide-react": ">=0.400.0",
+    "motion": "^12.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "tailwind-merge": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "class-variance-authority": {
+      "optional": true
+    },
+    "clsx": {
+      "optional": true
+    },
+    "tailwind-merge": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tsdown": "^0.15.0",
+    "typescript": "^5"
+  },
+  "keywords": [
+    "react",
+    "shadcn",
+    "scrub",
+    "number-input",
+    "calligraph"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jay15git/kinetic",
+    "directory": "packages/kinetic"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

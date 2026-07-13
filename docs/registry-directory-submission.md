@@ -27,6 +27,8 @@ Submit `@kinetic` after `https://kinetic.itsjay.in/r/scrub-number-field.json` is
 
 Reference: [ncdai directory submission](https://github.com/shadcn-ui/ui/issues/8607).
 
+**Submitted:** [shadcn-ui/ui#11153](https://github.com/shadcn-ui/ui/issues/11153)
+
 ## Pre-submit verification
 
 ```bash

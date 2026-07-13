@@ -77,12 +77,14 @@ NEXT_PUBLIC_KINETIC_REGISTRY_URL=https://kinetic.itsjay.in
 ## Deploy checklist
 
 1. Push to [github.com/jay15git/kinetic](https://github.com/jay15git/kinetic)
-2. Deploy Next.js app to Vercel (or similar)
-3. Add custom domain `kinetic.itsjay.in` (CNAME to your host)
-4. Verify:
+2. Vercel project: `scrubby` — production at [scrubby-zeta.vercel.app](https://scrubby-zeta.vercel.app)
+3. Custom domain `kinetic.itsjay.in` — add DNS record at your registrar:
+   - **Recommended:** `A kinetic.itsjay.in → 76.76.21.21`
+   - Or CNAME `kinetic` → `cname.vercel-dns.com` (see Vercel domain settings)
+4. Verify after DNS propagates:
    - `https://kinetic.itsjay.in/r/registry.json`
    - `https://kinetic.itsjay.in/r/scrub-number-field.json`
-5. Submit `@kinetic` — see [docs/registry-directory-submission.md](./registry-directory-submission.md)
+5. Submit `@kinetic` — filed at [shadcn-ui/ui#11153](https://github.com/shadcn-ui/ui/issues/11153); see also [docs/registry-directory-submission.md](./registry-directory-submission.md)
 
 ## Deferred (not v1)
 

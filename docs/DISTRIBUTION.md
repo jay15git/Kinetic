@@ -76,9 +76,10 @@ NEXT_PUBLIC_KINETIC_REGISTRY_URL=https://kinetic.itsjay.in
 
 ## Deploy checklist
 
-1. Push to [github.com/jay15git/kinetic](https://github.com/jay15git/kinetic)
-2. Vercel project: `scrubby` — production at [scrubby-zeta.vercel.app](https://scrubby-zeta.vercel.app)
-3. Custom domain `kinetic.itsjay.in` — add DNS record at your registrar:
+1. Push to [github.com/jay15git/Kinetic](https://github.com/jay15git/Kinetic) — pushes to `main` auto-deploy via GitHub Actions
+2. Vercel project: `kinetic` — production at [kinetic.itsjay.in](https://kinetic.itsjay.in)
+3. Optional native Git hookup: [docs/VERCEL_GIT_SETUP.md](./VERCEL_GIT_SETUP.md)
+4. Custom domain `kinetic.itsjay.in` — add DNS record at your registrar:
    - **Recommended:** `A kinetic.itsjay.in → 76.76.21.21`
    - Or CNAME `kinetic` → `cname.vercel-dns.com` (see Vercel domain settings)
 4. Verify after DNS propagates:

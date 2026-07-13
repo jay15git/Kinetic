@@ -63,17 +63,6 @@ export function ScrubDemo() {
       </ResizeCard>
 
       <ScrubRegistryPanel settings={settings} />
-
-      <p className="landing-hint">
-        Drag to scrub, click to type. Arrow keys, wheel, and drag share the same
-        step ladder; use the fine and coarse modifier keys for smaller or larger
-        steps. Double-click or fine-modifier+click resets to zero.
-        {settings.logo.enabled
-          ? " Drag the field icon to scrub."
-          : settings.scrub.wheelEnabled
-            ? " Scroll over the field to nudge in steps."
-            : ""}
-      </p>
     </div>
   )
 }

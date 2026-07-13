@@ -5,15 +5,7 @@ import { useLayoutEffect, useState, type RefObject } from "react"
  * Used for Figma-style right-anchored number fields: leading digits are masked,
  * trailing digits stay visible, and consumers can expose the full value via title/aria.
  */
-export function measureDisplayOverflow(element: HTMLElement | null) {
-  if (!element) {
-    return false
-  }
-
-  return element.scrollWidth > element.clientWidth + 1
-}
-
-export function measureContentOverflow(
+function measureContentOverflow(
   container: HTMLElement | null,
   content: HTMLElement | null,
 ) {

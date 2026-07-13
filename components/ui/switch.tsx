@@ -268,4 +268,3 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
 Switch.displayName = "Switch";
 
 export { Switch };
-export type { SwitchProps };

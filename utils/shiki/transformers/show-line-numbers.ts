@@ -1,13 +1,5 @@
 import type { ShikiTransformer } from "shiki"
 
-interface ShowLineNumbersOptions {
-  /**
-   * Always show line numbers regardless of meta properties
-   * @default false
-   */
-  activateByDefault?: boolean
-}
-
 function applyLineNumbersClass(
   node: Parameters<NonNullable<ShikiTransformer["pre"]>>[0],
 ) {
@@ -32,27 +24,6 @@ function applyLineNumbersClass(
   node.properties.class = className
 }
 
-const showLineNumbers = (
-  options: ShowLineNumbersOptions = {},
-): ShikiTransformer => {
-  const { activateByDefault = false } = options
-
-  return {
-    name: "AddLineNumbers",
-    pre(node) {
-      const rawMeta = this.options.meta?.__raw
-      const hasLineNumbersMeta = rawMeta?.includes("lineNumbers") ?? false
-      const addLineNumbers = activateByDefault || hasLineNumbersMeta
-
-      if (!addLineNumbers) {
-        return
-      }
-
-      applyLineNumbersClass(node)
-    },
-  }
-}
-
 /** Programmatic toggle for React code-block components. */
 const showLineNumbersWhen = (enabled: boolean): ShikiTransformer => ({
   name: "AddLineNumbers",
@@ -62,4 +33,4 @@ const showLineNumbersWhen = (enabled: boolean): ShikiTransformer => ({
   },
 })
 
-export { showLineNumbers, showLineNumbersWhen }
+export { showLineNumbersWhen }

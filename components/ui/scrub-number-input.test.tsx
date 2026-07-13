@@ -804,47 +804,6 @@ function OverflowFieldHarness({
   )
 }
 
-describe("display overflow measurement", () => {
-  it("detects overflow from scroll and client width", async () => {
-    const { measureContentOverflow, measureDisplayOverflow } = await import(
-      "@/lib/scrub-number-overflow"
-    )
-    const element = document.createElement("div")
-    Object.defineProperty(element, "scrollWidth", { value: 120, configurable: true })
-    Object.defineProperty(element, "clientWidth", { value: 76, configurable: true })
-
-    expect(measureDisplayOverflow(element)).toBe(true)
-
-    Object.defineProperty(element, "scrollWidth", { value: 40, configurable: true })
-    Object.defineProperty(element, "clientWidth", { value: 40, configurable: true })
-
-    expect(measureDisplayOverflow(element)).toBe(false)
-    expect(measureDisplayOverflow(null)).toBe(false)
-
-    const container = document.createElement("div")
-    const content = document.createElement("span")
-    Object.defineProperty(container, "clientWidth", { value: 76, configurable: true })
-    Object.defineProperty(content, "scrollWidth", { value: 120, configurable: true })
-    Object.defineProperty(content, "clientWidth", { value: 76, configurable: true })
-    Object.defineProperty(content, "getBoundingClientRect", {
-      configurable: true,
-      value: () => ({ width: 120 }),
-    })
-
-    expect(measureContentOverflow(container, content)).toBe(true)
-
-    Object.defineProperty(content, "scrollWidth", { value: 40, configurable: true })
-    Object.defineProperty(content, "clientWidth", { value: 80, configurable: true })
-    Object.defineProperty(content, "getBoundingClientRect", {
-      configurable: true,
-      value: () => ({ width: 40 }),
-    })
-
-    expect(measureContentOverflow(container, content)).toBe(false)
-    expect(measureContentOverflow(container, null)).toBe(false)
-  })
-})
-
 describe("ScrubNumberInput overflow", () => {
   let resizeCallback: ResizeObserverCallback | undefined
 

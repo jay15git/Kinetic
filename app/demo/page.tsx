@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function DemoPage() {
   return (
-    <LandingShell>
+    <LandingShell fill>
       <LandingEnterItem>
         <p className="landing-tagline">
           Live playground for the scrub number field. Adjust settings, then copy

@@ -161,10 +161,10 @@ export function ScrubInstallSection({
     >
       <TabsList variant="line" className="landing-install-tab-list">
         <TabsTrigger value="cli" data-install-tab-trigger="cli">
-          Command
+          <span className="landing-tab-label">Command</span>
         </TabsTrigger>
         <TabsTrigger value="manual" data-install-tab-trigger="manual">
-          Manual
+          <span className="landing-tab-label">Manual</span>
         </TabsTrigger>
       </TabsList>
 

@@ -31,6 +31,8 @@ import {
   GripHorizontal,
   GripVertical,
   Move,
+  MoveHorizontal,
+  MoveVertical,
   Percent,
   type LucideIcon,
 } from "lucide-react"
@@ -230,6 +232,8 @@ export const LOGO_ICON_OPTIONS = [
   "GripVertical",
   "GripHorizontal",
   "Move",
+  "MoveHorizontal",
+  "MoveVertical",
   "Percent",
 ] as const
 
@@ -249,6 +253,8 @@ const LOGO_ICONS: Record<LogoIconName, LucideIcon> = {
   GripVertical,
   GripHorizontal,
   Move,
+  MoveHorizontal,
+  MoveVertical,
   Percent,
 }
 
@@ -2174,16 +2180,6 @@ export function ScrubNumberInput({
       className={cn("h-7 scrub-bound-field w-full")}
       data-logo-scroll={logoScrollEnabled ? "" : undefined}
     >
-      {logoScrollEnabled ? (
-        <InputGroupAddon
-          align="inline-start"
-          aria-hidden
-          className="pointer-events-none invisible shrink-0 select-none pl-1.5"
-          tabIndex={-1}
-        >
-          <ScrubLogoIcon className="size-3.5 shrink-0" name={logo.icon} />
-        </InputGroupAddon>
-      ) : null}
       {fieldContent}
       {logoScrollEnabled ? (
         <InputGroupAddon

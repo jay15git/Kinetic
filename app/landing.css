@@ -61,9 +61,7 @@
   transition: opacity 160ms var(--landing-ease);
 }
 
-.landing-page-scroll:hover [data-slot="scroll-area-scrollbar"],
-.landing-page-scroll [data-slot="scroll-area-scrollbar"][data-scrolling],
-.landing-page-scroll [data-slot="scroll-area-scrollbar"][data-hovering] {
+.landing-page-scroll [data-slot="scroll-area-scrollbar"][data-scrolling] {
   opacity: 1;
 }
 
@@ -271,13 +269,45 @@
     border-color 160ms var(--landing-ease);
 }
 
+.landing-tab-label {
+  display: inline-block;
+  transition: transform 120ms var(--landing-ease);
+}
+
 .landing-pm-tab:hover {
   color: var(--landing-ink);
+}
+
+.landing-pm-tab:active .landing-tab-label {
+  transform: scale(0.92);
 }
 
 .landing-pm-tab-active {
   color: var(--landing-ink);
   border-bottom-color: var(--landing-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-pm-tab:active .landing-tab-label,
+  .landing-install-tab-list [data-slot="tabs-trigger"]:active .landing-tab-label {
+    transform: none;
+  }
+}
+
+.landing-pm-code-shell {
+  display: grid;
+  min-width: 0;
+  min-height: 2.75rem;
+}
+
+.landing-pm-code-panel {
+  grid-area: 1 / 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-pm-code-panel {
+    filter: none !important;
+  }
 }
 
 .landing-code-block:has(.landing-code-header:active) {
@@ -413,6 +443,29 @@
 }
 
 /* code-blocks + Shiki on landing */
+[data-scrollbar-reveal="scroll"] [data-slot="scroll-area-scrollbar"]:not([data-scrolling]) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.landing-code-scroll [data-slot="scroll-area-viewport"] {
+  height: 100%;
+  max-height: inherit;
+}
+
+.landing-code-scroll [data-slot="scroll-area-scrollbar"] {
+  opacity: 0;
+  transition: opacity 160ms var(--landing-ease);
+}
+
+.landing-code-scroll [data-slot="scroll-area-scrollbar"][data-scrolling] {
+  opacity: 1;
+}
+
+.landing-code-scroll [data-slot="scroll-area-thumb"] {
+  background: color-mix(in srgb, var(--landing-ink-3) 55%, transparent);
+}
+
 .landing-page pre.shiki {
   margin: 0;
   padding-block: 12px;
@@ -522,6 +575,10 @@
   bottom: 0;
   height: 2px;
   background: var(--landing-accent);
+}
+
+.landing-install-tab-list [data-slot="tabs-trigger"]:active .landing-tab-label {
+  transform: scale(0.92);
 }
 
 .landing-install-steps {

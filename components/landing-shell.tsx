@@ -7,7 +7,7 @@ export { LandingEnterItem }
 
 export function LandingShell({
   children,
-  fill = false,
+  fill = true,
 }: {
   children: React.ReactNode
   /** Viewport-sized page ScrollArea; content can grow and scroll as a whole. */
@@ -27,7 +27,7 @@ export function LandingShell({
   return (
     <div className={cn("landing-page font-sans", fill && "landing-page-fill")}>
       {fill ? (
-        <ScrollArea className="landing-page-scroll">
+        <ScrollArea className="landing-page-scroll" scrollbarReveal="scroll">
           {main}
         </ScrollArea>
       ) : (

@@ -56,11 +56,7 @@ const CodeblockShiki = ({
     void clientHighlight()
   }, [code, language, lineNumbers, wordWrap])
 
-  const classNames = cn(
-    "w-full min-w-0",
-    !shouldWordWrap && "overflow-x-auto overscroll-x-contain",
-    className,
-  )
+  const classNames = cn("w-full min-w-0", className)
 
   return highlightedHtml ? (
     <div

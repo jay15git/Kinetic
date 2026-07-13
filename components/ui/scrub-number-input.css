@@ -103,7 +103,7 @@
   }
 }
 
-.scrub-bound-field,
+.scrub-bound-field:not([data-slot="input-group"]),
 [data-slot="scrub-number-scrubbable"],
 [data-slot="input-group-control"],
 [data-slot="scrub-bound-feedback"] [data-slot="input-group"] [data-slot="input-group-control"] {

@@ -1,9 +1,11 @@
 "use client"
 
 import { useCallback, useMemo, useState } from "react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { CheckIcon, CopyIcon } from "lucide-react"
 
 import { CodeblockShiki } from "@/components/code-block/client/shiki"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { resolveCodeLanguage } from "@/lib/resolve-code-language"
 import type { Languages } from "@/utils/shiki/highlight"
 import { copyToClipboard } from "@/utils/copy"
@@ -27,13 +29,74 @@ const headerRowClassName =
 const headerCopyClassName =
   "landing-code-header flex min-w-0 flex-1 items-center justify-between gap-2 py-2.5 text-left"
 
-const contentClassName =
-  "min-w-0 max-w-full max-h-96 overflow-y-auto overscroll-contain bg-white font-mono text-[12.5px] leading-[1.7] tracking-[-0.01em] [scrollbar-gutter:stable]"
+const codeScrollClassName =
+  "landing-code-scroll min-w-0 max-w-full bg-white font-mono text-[12.5px] leading-[1.7] tracking-[-0.01em]"
 
-const contentClassNameScrollX =
-  "min-w-0 max-w-full max-h-96 overflow-x-auto overflow-y-auto overscroll-contain bg-white font-mono text-[12.5px] leading-[1.7] tracking-[-0.01em] [scrollbar-gutter:stable]"
+function CodeBlockScroll({
+  children,
+  className,
+  orientation = "vertical",
+}: {
+  children: React.ReactNode
+  className?: string
+  orientation?: "vertical" | "horizontal" | "both"
+}) {
+  return (
+    <ScrollArea
+      className={cn(codeScrollClassName, className)}
+      orientation={orientation}
+      scrollbarReveal="scroll"
+    >
+      {children}
+    </ScrollArea>
+  )
+}
 
-const fileContentClassName = "max-h-72"
+const PM_EASE = [0.23, 1, 0.32, 1] as const
+const PM_DURATION = 0.18
+
+function AnimatedTerminalCode({
+  manager,
+  defaultManager,
+  code,
+  initialHighlightedHtml,
+}: {
+  manager: PackageManager
+  defaultManager: PackageManager
+  code: string
+  initialHighlightedHtml?: string
+}) {
+  const reduceMotion = useReducedMotion()
+
+  return (
+    <div className="landing-pm-code-shell">
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={manager}
+          className="landing-pm-code-panel min-w-0"
+          initial={
+            reduceMotion ? false : { opacity: 0, filter: "blur(2px)" }
+          }
+          animate={{ opacity: 1, filter: "blur(0px)" }}
+          exit={reduceMotion ? undefined : { opacity: 0, filter: "blur(2px)" }}
+          transition={{
+            duration: reduceMotion ? 0 : PM_DURATION,
+            ease: PM_EASE,
+          }}
+        >
+          <CodeblockShiki
+            code={code}
+            language="bash"
+            lineNumbers={false}
+            initialHtml={
+              manager === defaultManager ? initialHighlightedHtml : undefined
+            }
+          />
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
 
 function useCopyCode(code: string) {
   const [copied, setCopied] = useState(false)
@@ -118,7 +181,7 @@ function PackageManagerHeader({
             )}
             onClick={() => onManagerChange(pm)}
           >
-            {pm}
+            <span className="landing-tab-label">{pm}</span>
           </button>
         ))}
       </div>
@@ -160,14 +223,14 @@ export function TerminalCodeBlock({
         copied={copied}
         onCopy={onCopy}
       />
-      <div className={contentClassName}>
-        <CodeblockShiki
+      <CodeBlockScroll className="max-h-96">
+        <AnimatedTerminalCode
+          manager={manager}
+          defaultManager={defaultManager}
           code={resolvedCode}
-          language="bash"
-          lineNumbers={false}
-          initialHtml={manager === defaultManager ? initialHighlightedHtml : undefined}
+          initialHighlightedHtml={initialHighlightedHtml}
         />
-      </div>
+      </CodeBlockScroll>
     </div>
   )
 }
@@ -192,7 +255,10 @@ export function CodeBlock({
   return (
     <div className={cn(shellClassName, className)}>
       <CodeBlockHeader label={label} copied={copied} onCopy={onCopy} />
-      <div className={lineNumbers ? contentClassNameScrollX : contentClassName}>
+      <CodeBlockScroll
+        className="max-h-96"
+        orientation={lineNumbers ? "both" : "vertical"}
+      >
         <CodeblockShiki
           code={code}
           language={resolvedLanguage}
@@ -200,7 +266,7 @@ export function CodeBlock({
           wordWrap={!lineNumbers}
           initialHtml={initialHighlightedHtml}
         />
-      </div>
+      </CodeBlockScroll>
     </div>
   )
 }
@@ -224,7 +290,7 @@ export function FileCodeBlock({
   return (
     <div className={cn(shellClassName, className)}>
       <CodeBlockHeader label={title} copied={copied} onCopy={onCopy} />
-      <div className={cn(contentClassNameScrollX, fileContentClassName)}>
+      <CodeBlockScroll className="max-h-72" orientation="both">
         <CodeblockShiki
           code={code}
           language={resolvedLanguage}
@@ -232,7 +298,7 @@ export function FileCodeBlock({
           wordWrap={false}
           initialHtml={initialHighlightedHtml}
         />
-      </div>
+      </CodeBlockScroll>
     </div>
   )
 }

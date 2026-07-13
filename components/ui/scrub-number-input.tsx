@@ -1905,11 +1905,8 @@ function mirrorInputTypography(source: HTMLElement): CSSProperties {
 }
 
 function mirrorCalligraphTypography(source: HTMLElement): CSSProperties {
-  const computed = getComputedStyle(source)
-  const { lineHeight: _lineHeight, ...typography } = mirrorInputTypography(source)
-
   return {
-    ...typography,
+    ...mirrorInputTypography(source),
     lineHeight: 1,
   }
 }
@@ -1991,6 +1988,9 @@ export function ScrubNumberInput({
   disabled,
   grouped = false,
   inputClassName,
+  // Strip from ...props so it is not forwarded to the DOM input.
+  // selectOnEdit is applied upstream via useNumberScrub.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- API parity only
   inputSettings = DEFAULT_INPUT_SETTINGS,
   logo = DEFAULT_LOGO_SETTINGS,
   max,
@@ -2032,31 +2032,31 @@ export function ScrubNumberInput({
     ...(isDisplayTruncated ? { "aria-valuetext": scrub.displayValue } : {}),
   }
 
-  const syncMirroredTypography = useCallback(() => {
-    if (scrub.interactingRef.current) {
-      return
-    }
-
-    const source = scrub.editing ? scrub.inputRef.current : mirrorRef.current
-
-    if (!source) {
-      return
-    }
-
-    const nextTypography = mirrorCalligraphTypography(source)
-    const nextKey = JSON.stringify(nextTypography)
-    const typographyChanged = nextKey !== prevTypographyRef.current
-
-    prevTypographyRef.current = nextKey
-
-    if (!typographyChanged) {
-      return
-    }
-
-    setMirroredTypography(nextTypography)
-  }, [scrub.editing, scrub.inputRef, scrub.interactingRef])
-
   useLayoutEffect(() => {
+    const syncMirroredTypography = () => {
+      if (scrub.interactingRef.current) {
+        return
+      }
+
+      const source = scrub.editing ? scrub.inputRef.current : mirrorRef.current
+
+      if (!source) {
+        return
+      }
+
+      const nextTypography = mirrorCalligraphTypography(source)
+      const nextKey = JSON.stringify(nextTypography)
+      const typographyChanged = nextKey !== prevTypographyRef.current
+
+      prevTypographyRef.current = nextKey
+
+      if (!typographyChanged) {
+        return
+      }
+
+      setMirroredTypography(nextTypography)
+    }
+
     syncMirroredTypography()
 
     const source = scrub.editing ? scrub.inputRef.current : mirrorRef.current
@@ -2071,7 +2071,7 @@ export function ScrubNumberInput({
     return () => {
       observer.disconnect()
     }
-  }, [scrub.displayValue, scrub.editing, scrub.interactionEpoch, syncMirroredTypography])
+  }, [scrub.displayValue, scrub.editing, scrub.inputRef, scrub.interactingRef, scrub.interactionEpoch])
 
   const groupControlClass =
     "relative z-[1] flex min-w-0 w-full flex-1 items-center justify-start overflow-hidden rounded-none border-0 bg-transparent text-foreground shadow-none dark:bg-transparent"

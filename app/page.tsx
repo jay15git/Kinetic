@@ -1,16 +1,11 @@
+import { Suspense } from "react"
+
 import { LandingShell } from "@/components/landing-shell"
-import { ScrubInstallSection } from "@/components/scrub-install-section"
-import { getScrubInstallHighlighted } from "@/lib/scrub-install-highlighted"
-import { getScrubInstallContent } from "@/lib/scrub-install-content"
+import { ScrubInstallAsync } from "@/components/scrub-install-async"
+import { ScrubInstallSkeleton } from "@/components/scrub-install-skeleton"
 import "./landing.css"
 
-const REGISTRY_URL =
-  process.env.NEXT_PUBLIC_KINETIC_REGISTRY_URL ?? "https://kinetic.itsjay.in"
-
-export default async function Home() {
-  const installContent = getScrubInstallContent(REGISTRY_URL)
-  const highlighted = await getScrubInstallHighlighted(installContent)
-
+export default function Home() {
   return (
     <LandingShell fill>
       <p className="landing-tagline">
@@ -22,10 +17,9 @@ export default async function Home() {
         <h2 id="install-heading" className="landing-section-title">
           Installation
         </h2>
-        <ScrubInstallSection
-          content={installContent}
-          highlighted={highlighted}
-        />
+        <Suspense fallback={<ScrubInstallSkeleton />}>
+          <ScrubInstallAsync />
+        </Suspense>
       </section>
     </LandingShell>
   )

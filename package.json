@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm registry:build && next build",
+    "build": "pnpm registry:build && pnpm install-files:generate && next build",
     "registry:validate": "shadcn registry validate ./public/r/registry.json",
     "start": "next start",
     "lint": "eslint",
@@ -14,6 +14,7 @@
     "test:component": "vitest run --config vitest.component.config.ts",
     "test:registry-smoke": "node ./scripts/registry-smoke.mjs",
     "registry:build": "shadcn build",
+    "install-files:generate": "node ./scripts/generate-install-files.mjs",
     "package:build": "pnpm --filter kinetic run build",
     "package:publish": "pnpm --filter kinetic publish"
   },

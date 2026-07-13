@@ -1,7 +1,5 @@
-import fs from "fs"
-import path from "path"
-
 import registry from "@/registry.json"
+import { SCRUB_INSTALL_REGISTRY_FILE_CONTENTS } from "@/lib/scrub-install-registry-files.generated"
 import { getScrubRegistryInstallCommands } from "@/lib/scrub-props-code"
 
 export type InstallFile = {
@@ -22,10 +20,6 @@ export type ScrubInstallContent = {
 
 const SCRUB_ITEM = registry.items.find((item) => item.name === "scrub-number-field")
 
-function readRegistryFile(relativePath: string): string {
-  return fs.readFileSync(path.join(process.cwd(), relativePath), "utf-8")
-}
-
 export function getScrubInstallContent(registryBaseUrl: string): ScrubInstallContent {
   if (!SCRUB_ITEM) {
     throw new Error("scrub-number-field registry item not found")
@@ -34,11 +28,18 @@ export function getScrubInstallContent(registryBaseUrl: string): ScrubInstallCon
   const commands = getScrubRegistryInstallCommands(registryBaseUrl)
   const dependencies = SCRUB_ITEM.dependencies.join(" ")
 
-  const files: InstallFile[] = SCRUB_ITEM.files.map((file) => ({
-    path: file.path,
-    target: file.target.replace(/^@/, ""),
-    content: readRegistryFile(file.path),
-  }))
+  const files: InstallFile[] = SCRUB_ITEM.files.map((file) => {
+    const content = SCRUB_INSTALL_REGISTRY_FILE_CONTENTS[file.path]
+    if (content === undefined) {
+      throw new Error(`Missing generated install content for ${file.path}`)
+    }
+
+    return {
+      path: file.path,
+      target: file.target.replace(/^@/, ""),
+      content,
+    }
+  })
 
   return {
     command: commands.scoped,

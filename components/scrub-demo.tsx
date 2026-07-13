@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import { ScrubRegistryPanel } from "@/components/scrub-registry-panel"
 import { ResizeCard } from "@/components/resize-card"
@@ -10,20 +10,24 @@ import {
   DEFAULT_SCRUB_FIELD_SETTINGS,
   normalizeScrubFieldSettings,
   ScrubNumberField,
+  type ScrubFieldSettings,
 } from "@/components/ui/scrub-number-input"
 
 export function ScrubDemo() {
   const [value, setValue] = useState(0)
-  const [settings, setSettings] = useState(DEFAULT_SCRUB_FIELD_SETTINGS)
+  const [settings, setSettings] = useState(() =>
+    normalizeScrubFieldSettings(DEFAULT_SCRUB_FIELD_SETTINGS),
+  )
 
-  useEffect(() => {
-    setSettings((current) => normalizeScrubFieldSettings(current))
-  }, [])
+  const handleSettingsChange = (next: ScrubFieldSettings) => {
+    const normalized = normalizeScrubFieldSettings(next)
+    setSettings(normalized)
+    setValue((current) => clampNumber(current, normalized.min, normalized.max))
+  }
 
-  useEffect(() => {
-    const { min, max } = settings
-    setValue((current) => clampNumber(current, min, max))
-  }, [settings.min, settings.max])
+  const handleValueChange = (next: number) => {
+    setValue(clampNumber(next, settings.min, settings.max))
+  }
 
   const sharedFieldProps = {
     calligraph: settings.calligraph,
@@ -48,17 +52,14 @@ export function ScrubDemo() {
               inputClassName="landing-demo-input"
               {...sharedFieldProps}
               value={value}
-              onValueChange={setValue}
+              onValueChange={handleValueChange}
             />
           </div>
         </div>
       </div>
 
       <ResizeCard className="landing-settings">
-        <ScrubSettingsPanel
-          value={settings}
-          onChange={(next) => setSettings(normalizeScrubFieldSettings(next))}
-        />
+        <ScrubSettingsPanel value={settings} onChange={handleSettingsChange} />
       </ResizeCard>
 
       <ScrubRegistryPanel settings={settings} />

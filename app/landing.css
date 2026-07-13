@@ -21,6 +21,8 @@
   --panel-translate-y: 8px;
   --panel-blur: 2px;
   --panel-ease: var(--resize-ease);
+  --landing-enter-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --landing-enter-duration: 320ms;
 }
 
 .landing-page {
@@ -211,6 +213,15 @@
 
 .landing-link:active {
   transform: scale(0.96);
+}
+
+.landing-link-active {
+  color: var(--landing-ink);
+  box-shadow: var(--landing-shadow-card);
+}
+
+.landing-template {
+  display: contents;
 }
 
 .landing-inline-link {
@@ -447,6 +458,8 @@
   flex-direction: column;
   gap: 0;
   min-width: 0;
+  animation: landing-panel-enter var(--landing-enter-duration)
+    var(--landing-enter-ease) 80ms both;
 }
 
 .landing-install-panel-shell {
@@ -563,6 +576,11 @@
   max-width: 100%;
 }
 
+.landing-demo-registry {
+  animation: landing-panel-enter var(--landing-enter-duration)
+    var(--landing-enter-ease) 280ms both;
+}
+
 .landing-settings {
   position: relative;
   z-index: 0;
@@ -570,6 +588,8 @@
   background: #fff;
   box-shadow: var(--landing-shadow-card);
   padding: 20px 24px;
+  animation: landing-panel-enter var(--landing-enter-duration)
+    var(--landing-enter-ease) 200ms both;
 }
 
 .landing-demo-card {
@@ -583,6 +603,8 @@
   isolation: isolate;
   box-shadow: var(--landing-shadow-card);
   padding: 28px 24px;
+  animation: landing-demo-card-enter var(--landing-enter-duration)
+    var(--landing-enter-ease) 120ms both;
 }
 
 .landing-demo-card > div {
@@ -782,6 +804,39 @@
 
   50% {
     opacity: 0.85;
+  }
+}
+
+@keyframes landing-demo-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes landing-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-demo-card,
+  .landing-settings,
+  .landing-install-tabs,
+  .landing-demo-registry {
+    animation: none;
   }
 }
 

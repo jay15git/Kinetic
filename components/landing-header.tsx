@@ -1,5 +1,7 @@
 import Link from "next/link"
 
+import { LandingNavLink } from "@/components/landing-nav-link"
+
 const GITHUB_URL = "https://github.com/jay15git/kinetic"
 const LICENSE_URL = `${GITHUB_URL}/blob/main/LICENSE`
 
@@ -18,9 +20,7 @@ export function LandingHeader() {
         >
           MIT
         </a>
-        <Link href="/demo" className="landing-link">
-          Demo
-        </Link>
+        <LandingNavLink href="/demo">Demo</LandingNavLink>
         <a
           href={GITHUB_URL}
           target="_blank"

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { LandingShell } from "@/components/landing-shell"
+import { LandingShell, LandingEnterItem } from "@/components/landing-shell"
 import { ScrubDemo } from "@/components/scrub-demo"
 import "../landing.css"
 
@@ -13,17 +13,21 @@ export const metadata: Metadata = {
 export default function DemoPage() {
   return (
     <LandingShell>
-      <p className="landing-tagline">
-        Live playground for the scrub number field. Adjust settings, then copy
-        the generated usage snippet.
-      </p>
+      <LandingEnterItem>
+        <p className="landing-tagline">
+          Live playground for the scrub number field. Adjust settings, then copy
+          the generated usage snippet.
+        </p>
+      </LandingEnterItem>
 
-      <section className="landing-section" aria-labelledby="demo-heading">
-        <h2 id="demo-heading" className="landing-section-title">
-          Demo
-        </h2>
-        <ScrubDemo />
-      </section>
+      <LandingEnterItem>
+        <section className="landing-section" aria-labelledby="demo-heading">
+          <h2 id="demo-heading" className="landing-section-title">
+            Demo
+          </h2>
+          <ScrubDemo />
+        </section>
+      </LandingEnterItem>
     </LandingShell>
   )
 }

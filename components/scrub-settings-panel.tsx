@@ -29,6 +29,8 @@ import { useDisplayOverflowTruncated } from "@/lib/scrub-number-overflow"
 import { Calligraph } from "calligraph"
 import { useReducedMotion } from "motion/react"
 
+const SETTINGS_NUMERIC_FIELD_WIDTH = "w-16"
+
 const FINE_MODIFIER_OPTIONS = ["shift", "alt", "meta"] as const satisfies readonly FineModifier[]
 
 const FINE_MODIFIER_LABELS: Record<FineModifier, string> = {
@@ -160,7 +162,7 @@ function SettingsScrubNumberField({
     <ScrubNumberField
       aria-label={ariaLabel}
       calligraph={settings.calligraph}
-      className="settings-scrub w-24"
+      className={cn("settings-scrub", SETTINGS_NUMERIC_FIELD_WIDTH)}
       format={settings.format}
       formatValue={formatValue}
       inputClassName="font-mono"
@@ -356,7 +358,7 @@ function BoundScrubNumberField({
     logo: { ...settings.logo, enabled: false },
     scrub: settings.scrub,
     step: settings.step ?? 1,
-    className: "w-24",
+    className: SETTINGS_NUMERIC_FIELD_WIDTH,
     min: bound === "max" ? settings.min : undefined,
     max: bound === "min" ? settings.max : undefined,
   }
@@ -384,7 +386,7 @@ function BoundScrubNumberField({
             type="button"
             aria-label={`Set ${ariaLabel}`}
             className={cn(
-              "flex h-7 w-24 items-center justify-center rounded-[20px] border border-input",
+              `flex h-7 ${SETTINGS_NUMERIC_FIELD_WIDTH} items-center justify-center rounded-[20px] border border-input`,
               "bg-[var(--input-fill)] px-2 font-mono text-[0.8rem] tabular-nums text-muted-foreground",
               "transition-colors hover:text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
             )}

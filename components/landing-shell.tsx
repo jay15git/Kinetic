@@ -1,6 +1,9 @@
 import { LandingHeader } from "@/components/landing-header"
+import { LandingEnter, LandingEnterItem } from "@/components/landing-enter"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
+
+export { LandingEnterItem }
 
 export function LandingShell({
   children,
@@ -12,8 +15,12 @@ export function LandingShell({
 }) {
   const main = (
     <main className="landing-main">
-      <LandingHeader />
-      {children}
+      <LandingEnter>
+        <LandingEnterItem>
+          <LandingHeader />
+        </LandingEnterItem>
+        {children}
+      </LandingEnter>
     </main>
   )
 

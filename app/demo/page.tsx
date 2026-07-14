@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 
+import { LandingMit } from "@/components/landing-mit"
 import { LandingShell, LandingEnterItem } from "@/components/landing-shell"
 import { ScrubDemo } from "@/components/scrub-demo"
 import "../landing.css"
@@ -14,10 +15,13 @@ export default function DemoPage() {
   return (
     <LandingShell fill>
       <LandingEnterItem>
-        <p className="landing-tagline">
-          Live playground for the scrub number field. Adjust settings, then copy
-          the generated usage snippet.
-        </p>
+        <div className="landing-lede">
+          <p className="landing-tagline">
+            Live playground for the scrub number field. Adjust settings, then copy
+            the generated usage snippet.
+          </p>
+          <LandingMit />
+        </div>
       </LandingEnterItem>
 
       <LandingEnterItem>

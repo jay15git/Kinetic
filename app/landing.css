@@ -135,11 +135,16 @@
   gap: 8px;
 }
 
+.landing-lede {
+  margin: 0 0 36px;
+  flex-shrink: 0;
+}
+
 .landing-mit {
   display: inline-flex;
   align-items: center;
-  min-height: 30px;
-  padding: 0 4px;
+  min-height: 24px;
+  padding: 0;
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
@@ -153,17 +158,16 @@
 }
 
 .landing-tagline {
-  margin: 0 0 36px;
+  margin: 0 0 10px;
   font-size: 15px;
   line-height: 24px;
   letter-spacing: -0.01em;
   color: var(--landing-ink-2);
   text-wrap: pretty;
-  flex-shrink: 0;
 }
 
 @media (max-width: 480px) {
-  .landing-tagline {
+  .landing-lede {
     margin-bottom: 28px;
   }
 }

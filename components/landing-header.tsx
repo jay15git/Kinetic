@@ -1,26 +1,23 @@
+"use client"
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { LandingNavLink } from "@/components/landing-nav-link"
 
 const GITHUB_URL = "https://github.com/jay15git/kinetic"
-const LICENSE_URL = `${GITHUB_URL}/blob/main/LICENSE`
 
 export function LandingHeader() {
+  const pathname = usePathname()
+  const onDemo = pathname === "/demo" || pathname.startsWith("/demo/")
+
   return (
     <header className="landing-header">
       <Link href="/" className="landing-title-link">
         <h1 className="landing-title">Kinetic</h1>
       </Link>
       <div className="landing-header-actions">
-        <a
-          href={LICENSE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="landing-mit"
-        >
-          MIT
-        </a>
-        <LandingNavLink href="/demo">Demo</LandingNavLink>
+        {onDemo ? null : <LandingNavLink href="/demo">Demo</LandingNavLink>}
         <a
           href={GITHUB_URL}
           target="_blank"

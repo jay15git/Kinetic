@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 
+import { LandingMit } from "@/components/landing-mit"
 import { LandingShell, LandingEnterItem } from "@/components/landing-shell"
 import { ScrubInstallAsync } from "@/components/scrub-install-async"
 import { ScrubInstallSkeleton } from "@/components/scrub-install-skeleton"
@@ -9,10 +10,13 @@ export default function Home() {
   return (
     <LandingShell fill>
       <LandingEnterItem>
-        <p className="landing-tagline">
-          Drag-to-scrub number fields with animated digits. Click to edit,
-          keyboard to nudge — design-tool ergonomics for React.
-        </p>
+        <div className="landing-lede">
+          <p className="landing-tagline">
+            Drag-to-scrub number fields with animated digits. Click to edit,
+            keyboard to nudge — design-tool ergonomics for React.
+          </p>
+          <LandingMit />
+        </div>
       </LandingEnterItem>
 
       <LandingEnterItem>

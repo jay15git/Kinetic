@@ -2,6 +2,7 @@
   "name": "kinetic-demo",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "pnpm registry:build && pnpm install-files:generate && next build",

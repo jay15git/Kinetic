@@ -380,7 +380,7 @@ function BoundScrubNumberField({
             type="button"
             aria-label={`Set ${ariaLabel}`}
             className={cn(
-              `flex h-7 ${SETTINGS_NUMERIC_FIELD_WIDTH} items-center justify-center rounded-[20px] border border-input`,
+              `flex h-7 ${SETTINGS_NUMERIC_FIELD_WIDTH} items-center justify-center rounded-[12px] border border-input`,
               "bg-[var(--input-fill)] px-2 font-mono text-[0.8rem] tabular-nums text-muted-foreground",
               "transition-colors hover:text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
             )}

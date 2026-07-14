@@ -304,6 +304,10 @@
   min-height: 2.75rem;
 }
 
+.landing-code-scroll {
+  min-height: 2.75rem;
+}
+
 .landing-pm-code-panel {
   grid-area: 1 / 1;
 }
@@ -453,7 +457,6 @@
 }
 
 .landing-code-scroll [data-slot="scroll-area-viewport"] {
-  height: 100%;
   max-height: inherit;
 }
 

@@ -28,37 +28,67 @@ const CodeblockShiki = ({
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(
     initialHtml ?? null,
   )
-  const skipInitialHighlightRef = useRef(Boolean(initialHtml))
+  const skipClientHighlightRef = useRef(Boolean(initialHtml))
   const shouldWordWrap = wordWrap && !lineNumbers
 
   useEffect(() => {
-    if (skipInitialHighlightRef.current) {
-      skipInitialHighlightRef.current = false
+    if (!initialHtml) {
       return
     }
 
+    setHighlightedHtml(initialHtml)
+    skipClientHighlightRef.current = true
+  }, [initialHtml])
+
+  useEffect(() => {
+    let cancelled = false
+
     async function clientHighlight() {
       if (!code) {
-        setHighlightedHtml("<pre><code></code></pre>")
+        if (!cancelled) {
+          setHighlightedHtml(null)
+        }
         return
       }
-      const highlighter = await highlight()
-      const html = highlighter.codeToHtml(code, {
-        lang: language,
-        themes: {
-          light: Themes.light,
-          dark: Themes.dark,
-        },
-        transformers: getShikiTransformers({ lineNumbers, wordWrap }),
-      })
-      setHighlightedHtml(html)
+
+      try {
+        const highlighter = await highlight()
+        const html = highlighter.codeToHtml(code, {
+          lang: language,
+          themes: {
+            light: Themes.light,
+            dark: Themes.dark,
+          },
+          transformers: getShikiTransformers({ lineNumbers, wordWrap }),
+        })
+
+        if (!cancelled) {
+          setHighlightedHtml(html)
+        }
+      } catch {
+        if (!cancelled) {
+          setHighlightedHtml(null)
+        }
+      }
     }
+
+    if (skipClientHighlightRef.current) {
+      skipClientHighlightRef.current = false
+      return
+    }
+
+    setHighlightedHtml(null)
     void clientHighlight()
+
+    return () => {
+      cancelled = true
+    }
   }, [code, language, lineNumbers, wordWrap])
 
   const classNames = cn("w-full min-w-0", className)
+  const showHighlighted = highlightedHtml !== null && code.length > 0
 
-  return highlightedHtml ? (
+  return showHighlighted ? (
     <div
       className={classNames}
       dangerouslySetInnerHTML={{ __html: highlightedHtml }}

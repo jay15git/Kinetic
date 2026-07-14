@@ -1,5 +1,6 @@
 "use client"
 
+import "@/lib/home-tab-pending"
 import "@/lib/install-tab-pending"
 
 import { ShapeProvider } from "@/lib/shape-context"

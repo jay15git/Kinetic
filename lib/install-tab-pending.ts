@@ -8,6 +8,10 @@ declare global {
   }
 }
 
+function isInstallTab(value: string | null | undefined): value is InstallTab {
+  return value === "cli" || value === "manual"
+}
+
 if (typeof window !== "undefined" && !window.__scrubInstallTabCapture) {
   window.__scrubInstallTabCapture = true
   document.addEventListener(
@@ -18,7 +22,7 @@ if (typeof window !== "undefined" && !window.__scrubInstallTabCapture) {
       )
       if (!trigger) return
       const value = trigger.getAttribute("data-install-tab-trigger")
-      if (value === "cli" || value === "manual") {
+      if (isInstallTab(value)) {
         pendingInstallTab = value
       }
     },
@@ -27,5 +31,10 @@ if (typeof window !== "undefined" && !window.__scrubInstallTabCapture) {
 }
 
 export function readInitialInstallTab(): InstallTab {
+  if (typeof window !== "undefined") {
+    const tab = new URLSearchParams(window.location.search).get("tab")
+    if (isInstallTab(tab)) return tab
+  }
+
   return pendingInstallTab ?? "cli"
 }

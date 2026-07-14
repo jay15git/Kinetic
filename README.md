@@ -1,6 +1,8 @@
 # Kinetic
 
-A shadcn-style **scrub number input** for React: drag to change values, click to type, animated digit transitions.
+Drag-to-scrub **Scrub Number Input** for React: click to type, animated digit transitions.
+
+Full API reference: [kinetic.itsjay.in](https://kinetic.itsjay.in/?tab=api) (Features tab).
 
 ## Features
 
@@ -14,7 +16,7 @@ A shadcn-style **scrub number input** for React: drag to change values, click to
 
 ## Installation
 
-Use the **Command** tab for registry install, or **Manual** for copy-paste setup. The live demo at `/demo` mirrors the same structure.
+Use the **Command** tab for registry install, **Manual** for copy-paste setup. API reference lives on the **Features** tab. The live demo at `/demo` mirrors the playground structure.
 
 ### Command
 
@@ -193,11 +195,11 @@ Kinetic distributes via the **shadcn namespace registry** at [kinetic.itsjay.in]
 
 ### Install
 
-See [Installation](#installation) above. The demo at `/demo` copies generated props from the **Props** section after you tweak settings.
+See [Installation](#installation) above. The demo at `/demo` copies generated props from the **Usage** section after you tweak settings.
 
 ### Demo
 
-Run `pnpm dev` and open `/demo`. Adjust settings in the panel, then copy the generated props snippet from the **Props** section.
+Run `pnpm dev` and open `/demo`. Adjust settings in the panel, then copy the generated props snippet from the **Usage** section.
 
 ### Build registry locally
 

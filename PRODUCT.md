@@ -10,7 +10,7 @@ React developers evaluating or installing a scrub number input for design-tool-s
 
 ## Product Purpose
 
-Kinetic is a shadcn-registry component for drag-to-scrub number fields with animated digits. The home page at `/` covers installation; the demo at `/demo` is the settings playground with generated usage snippets. Success means a developer installs the component in under a minute with confidence in how it feels.
+Kinetic is a shadcn-registry **Scrub Number Input** for drag-to-scrub number input with animated digits. The home page at `/` covers features (demo, gestures, API reference) and installation (Command, Manual). The demo at `/demo` is the settings playground with generated usage snippets. Success means a developer installs the component in under a minute with confidence in how it feels.
 
 ## Brand Personality
 

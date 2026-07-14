@@ -1,6 +1,8 @@
 # kinetic
 
-Scrub number field for React apps using [shadcn/ui](https://ui.shadcn.com) (base-nova).
+**Scrub Number Input** for React apps using [shadcn/ui](https://ui.shadcn.com) (base-nova). Drag-to-scrub number input with animated digits.
+
+Full API reference: [kinetic.itsjay.in](https://kinetic.itsjay.in/?tab=api) · [Demo](https://kinetic.itsjay.in/demo)
 
 ## Install
 
@@ -91,7 +93,7 @@ import { ScrubNumberField } from "kinetic"
 />
 ```
 
-See the [demo](https://kinetic.itsjay.in/demo) and [source](https://github.com/jay15git/kinetic) for full settings.
+See the [demo](https://kinetic.itsjay.in/demo), [API reference](https://kinetic.itsjay.in/?tab=api), and [source](https://github.com/jay15git/kinetic) for full settings.
 
 ## License
 

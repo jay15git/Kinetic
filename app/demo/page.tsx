@@ -8,7 +8,7 @@ import "../landing.css"
 export const metadata: Metadata = {
   title: "Demo — Kinetic",
   description:
-    "Interactive scrub number field playground. Tweak settings and copy generated usage props.",
+    "Interactive Scrub Number Input playground. Tweak settings and copy generated usage props.",
 }
 
 export default function DemoPage() {
@@ -16,9 +16,10 @@ export default function DemoPage() {
     <LandingShell fill>
       <LandingEnterItem>
         <div className="landing-lede">
+          <p className="landing-component-name">Scrub Number Input</p>
           <p className="landing-tagline">
-            Live playground for the scrub number field. Adjust settings, then copy
-            the generated usage snippet.
+            Interactive playground for the Scrub Number Input. Adjust settings,
+            then copy the generated usage snippet.
           </p>
           <LandingMit />
         </div>

@@ -21,7 +21,7 @@ export function ScrubRegistryPanel({
 
   return (
     <section className={cn("landing-demo-registry flex flex-col", className)}>
-      <h2 className="landing-section-title mb-2">Props</h2>
+      <h2 className="landing-section-title mb-2">Usage</h2>
       <CodeBlock label="Usage" code={propsCode} />
     </section>
   )

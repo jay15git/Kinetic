@@ -23,11 +23,16 @@ export function ScrubHowItWorks() {
             aria-label="Value"
             className="w-full"
             inputClassName="landing-demo-input"
+            allowWheelScrub={settings.allowWheelScrub}
+            boundFeedback={settings.boundFeedback}
             calligraph={settings.calligraph}
+            direction={settings.direction}
             format={settings.format}
             inputSettings={settings.input}
+            largeStep={settings.largeStep}
             logo={settings.logo}
-            scrub={settings.scrub}
+            pixelSensitivity={settings.pixelSensitivity}
+            smallStep={settings.smallStep}
             step={settings.step ?? 1}
             min={settings.min}
             max={settings.max}

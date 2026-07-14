@@ -28,7 +28,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm exec eslint components/ui/scrub-number-input.tsx lib/scrub-number-math.ts hooks/use-controllable-state.tsx
+        run: pnpm exec eslint components/ui/scrub-number-input.tsx lib/scrub-number-overflow.ts hooks/use-controllable-state.tsx
 
       - name: Unit tests
         run: pnpm test:unit

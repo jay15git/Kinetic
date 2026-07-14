@@ -7,14 +7,10 @@ import {
   ScrubNumberField,
   type BoundFeedbackMode,
   type CalligraphSettings,
-  type CoarseModifier,
-  type FineModifier,
   type InputSettings,
   type LogoSettings,
   type ScrubFieldSettings,
-  type ScrubSettings,
   normalizeScrubFieldSettings,
-  resolveFineStep,
 } from "@/components/ui/scrub-number-input"
 import { Slider } from "@/components/unlumen-ui/slider"
 import { Switch } from "@/components/ui/switch"
@@ -25,48 +21,23 @@ import { useReducedMotion } from "motion/react"
 
 const SETTINGS_NUMERIC_FIELD_WIDTH = "w-16"
 
-const FINE_MODIFIER_OPTIONS = ["shift", "alt", "meta"] as const satisfies readonly FineModifier[]
-
-const FINE_MODIFIER_LABELS: Record<FineModifier, string> = {
-  shift: "Shift",
-  alt: "Alt / Option",
-  meta: "Cmd",
-}
-
-const COARSE_MODIFIER_OPTIONS = [
-  "shift",
-  "alt",
-  "meta",
-] as const satisfies readonly CoarseModifier[]
-
-const COARSE_MODIFIER_LABELS: Record<CoarseModifier, string> = {
-  shift: "Shift",
-  alt: "Alt / Option",
-  meta: "Cmd",
-}
-
 function TextSelect<T extends string>({
   value,
   options,
   onChange,
-  disabledOptions = [],
   formatLabel = (option) => option,
   renderOption,
 }: {
   value: T
   options: readonly T[]
   onChange: (value: T) => void
-  disabledOptions?: readonly T[]
   formatLabel?: (option: T) => string
   renderOption?: (option: T, selected: boolean) => React.ReactNode
 }) {
-  const disabled = new Set(disabledOptions)
-
   return (
     <div className="settings-option-group">
       {options.map((option) => {
         const selected = option === value
-        const isDisabled = disabled.has(option)
         const label = renderOption
           ? renderOption(option, selected)
           : formatLabel(option)
@@ -78,21 +49,14 @@ function TextSelect<T extends string>({
           <button
             key={option}
             type="button"
-            disabled={isDisabled}
             onClick={() => onChange(option)}
             className={cn(
               "settings-option text-xs capitalize outline-none focus-visible:underline",
-              isDisabled
-                ? "cursor-not-allowed text-muted-foreground/40"
-                : "cursor-pointer",
+              "cursor-pointer",
               selected
                 ? "text-foreground"
-                : isDisabled
-                  ? ""
-                  : "text-muted-foreground hover:text-foreground/70",
+                : "text-muted-foreground hover:text-foreground/70",
             )}
-            aria-disabled={isDisabled || undefined}
-            aria-label={renderOption ? option : undefined}
           >
             <span className="settings-option-sizer" aria-hidden>
               {sizerLabel}
@@ -139,7 +103,6 @@ function SettingsScrubNumberField({
   min,
   max,
   step,
-  formatValue,
   "aria-label": ariaLabel,
   settings,
 }: {
@@ -148,7 +111,6 @@ function SettingsScrubNumberField({
   min: number
   max: number
   step: number
-  formatValue?: (value: number) => string
   "aria-label"?: string
   settings: ScrubFieldSettings
 }) {
@@ -157,15 +119,12 @@ function SettingsScrubNumberField({
       aria-label={ariaLabel}
       calligraph={settings.calligraph}
       className={cn("settings-scrub", SETTINGS_NUMERIC_FIELD_WIDTH)}
-      format={settings.format}
-      formatValue={formatValue}
       inputClassName="font-mono"
       inputSettings={settings.input}
       logo={{ ...settings.logo, enabled: false }}
       max={max}
       min={min}
       onValueChange={onChange}
-      scrub={settings.scrub}
       step={step}
       value={value}
     />
@@ -346,11 +305,9 @@ function BoundScrubNumberField({
 }) {
   const sharedFieldProps = {
     calligraph: settings.calligraph,
-    format: settings.format,
     inputSettings: settings.input,
     inputClassName: "font-mono",
     logo: { ...settings.logo, enabled: false },
-    scrub: settings.scrub,
     step: settings.step ?? 1,
     className: SETTINGS_NUMERIC_FIELD_WIDTH,
     min: bound === "max" ? settings.min : undefined,
@@ -359,43 +316,43 @@ function BoundScrubNumberField({
 
   return (
     <div className="flex items-center gap-2">
-        {value != null ? (
-          <button
-            type="button"
-            aria-label={`Clear ${ariaLabel}`}
-            className={cn(
-              "flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md",
-              "text-muted-foreground transition-colors outline-none",
-              "hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50",
-            )}
-            onClick={() => onChange(undefined)}
-          >
-            <BoundResetIcon />
-          </button>
-        ) : (
-          <span className="size-7 shrink-0" aria-hidden />
-        )}
-        {value == null ? (
-          <button
-            type="button"
-            aria-label={`Set ${ariaLabel}`}
-            className={cn(
-              `flex h-7 ${SETTINGS_NUMERIC_FIELD_WIDTH} items-center justify-center rounded-[12px] border border-input`,
-              "bg-[var(--input-fill)] px-2 font-mono text-[0.8rem] tabular-nums text-muted-foreground",
-              "transition-colors hover:text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
-            )}
-            onClick={() => onChange(bound === "min" ? 0 : 100)}
-          >
-            —
-          </button>
-        ) : (
-          <ScrubNumberField
-            aria-label={ariaLabel}
-            value={value}
-            onValueChange={onChange}
-            {...sharedFieldProps}
-          />
-        )}
+      {value != null ? (
+        <button
+          type="button"
+          aria-label={`Clear ${ariaLabel}`}
+          className={cn(
+            "flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md",
+            "text-muted-foreground transition-colors outline-none",
+            "hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50",
+          )}
+          onClick={() => onChange(undefined)}
+        >
+          <BoundResetIcon />
+        </button>
+      ) : (
+        <span className="size-7 shrink-0" aria-hidden />
+      )}
+      {value == null ? (
+        <button
+          type="button"
+          aria-label={`Set ${ariaLabel}`}
+          className={cn(
+            `flex h-7 ${SETTINGS_NUMERIC_FIELD_WIDTH} items-center justify-center rounded-[12px] border border-input`,
+            "bg-[var(--input-fill)] px-2 font-mono text-[0.8rem] tabular-nums text-muted-foreground",
+            "transition-colors hover:text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+          )}
+          onClick={() => onChange(bound === "min" ? 0 : 100)}
+        >
+          —
+        </button>
+      ) : (
+        <ScrubNumberField
+          aria-label={ariaLabel}
+          value={value}
+          onValueChange={onChange}
+          {...sharedFieldProps}
+        />
+      )}
     </div>
   )
 }
@@ -411,15 +368,6 @@ export function ScrubSettingsPanel({
 
   const patch = (partial: Partial<ScrubFieldSettings>) => {
     onChange(normalizeScrubFieldSettings({ ...settings, ...partial }))
-  }
-
-  const patchScrub = (partial: Partial<ScrubSettings>) => {
-    onChange(
-      normalizeScrubFieldSettings({
-        ...settings,
-        scrub: { ...settings.scrub, ...partial },
-      }),
-    )
   }
 
   const patchCalligraph = (partial: Partial<CalligraphSettings>) => {
@@ -450,9 +398,6 @@ export function ScrubSettingsPanel({
   }
 
   const fieldStep = settings.step ?? 1
-  const resolvedFineStep = resolveFineStep(fieldStep, settings.scrub.fineStep)
-  const fineModifier = settings.scrub.fineModifier ?? "alt"
-  const coarseModifier = settings.scrub.coarseModifier ?? "shift"
 
   return (
     <div className="settings-panel">
@@ -492,55 +437,28 @@ export function ScrubSettingsPanel({
 
         <SwitchSettingsField
           label="Wheel scroll"
-          checked={settings.scrub.wheelEnabled}
+          checked={Boolean(settings.allowWheelScrub)}
           onToggle={() =>
-            patchScrub({ wheelEnabled: !settings.scrub.wheelEnabled })
+            patch({ allowWheelScrub: !settings.allowWheelScrub })
           }
         />
 
-        <SettingsReveal open={settings.scrub.wheelEnabled}>
-          <SettingsField label="Wheel sensitivity">
-            <SettingsScrubNumberField
-              aria-label="Wheel sensitivity"
-              min={1}
-              max={200}
-              settings={settings}
-              step={1}
-              value={settings.scrub.wheelSensitivity ?? 20}
-              onChange={(wheelSensitivity) => patchScrub({ wheelSensitivity })}
-            />
-          </SettingsField>
-        </SettingsReveal>
-
         <SettingsField label="Direction">
           <TextSelect
-            value={settings.scrub.direction}
+            value={settings.direction ?? "horizontal"}
             options={["horizontal", "vertical"] as const}
-            onChange={(direction) => patchScrub({ direction })}
+            onChange={(direction) => patch({ direction })}
           />
         </SettingsField>
 
-        <SettingsField label="Sensitivity">
+        <SettingsField label="Pixel sensitivity">
           <SettingsSliderField
-            aria-label="Sensitivity"
-            min={0.25}
-            max={4}
-            step={0.25}
-            value={settings.scrub.sensitivity}
-            onChange={(sensitivity) => patchScrub({ sensitivity })}
-            formatValue={(v) => v.toFixed(2)}
-            calligraph={settings.calligraph}
-          />
-        </SettingsField>
-
-        <SettingsField label="Threshold">
-          <SettingsSliderField
-            aria-label="Scrub threshold"
+            aria-label="Pixel sensitivity"
             min={1}
             max={10}
             step={1}
-            value={settings.scrub.threshold ?? 3}
-            onChange={(threshold) => patchScrub({ threshold })}
+            value={settings.pixelSensitivity ?? 2}
+            onChange={(pixelSensitivity) => patch({ pixelSensitivity })}
             calligraph={settings.calligraph}
           />
         </SettingsField>
@@ -569,7 +487,7 @@ export function ScrubSettingsPanel({
 
         <SettingsField label="Bound feedback">
           <TextSelect
-            value={settings.scrub.boundFeedback}
+            value={settings.boundFeedback ?? "none"}
             options={
               [
                 "none",
@@ -580,7 +498,7 @@ export function ScrubSettingsPanel({
             formatLabel={(option) =>
               option === "borderPulse" ? "border" : option
             }
-            onChange={(boundFeedback) => patchScrub({ boundFeedback })}
+            onChange={(boundFeedback) => patch({ boundFeedback })}
           />
         </SettingsField>
       </SettingsSection>
@@ -598,47 +516,27 @@ export function ScrubSettingsPanel({
           />
         </SettingsField>
 
-        <SettingsField label="Fine step">
+        <SettingsField label="Small step (Alt)">
           <SettingsScrubNumberField
-            aria-label="Fine step"
+            aria-label="Small step"
             min={0.001}
             max={Math.max(fieldStep, 1)}
             settings={settings}
             step={0.001}
-            value={resolvedFineStep}
-            onChange={(fineStep) => patchScrub({ fineStep })}
+            value={settings.smallStep ?? 0.1}
+            onChange={(smallStep) => patch({ smallStep })}
           />
         </SettingsField>
 
-        <SettingsField label="Fine modifier">
-          <TextSelect
-            value={fineModifier}
-            options={FINE_MODIFIER_OPTIONS}
-            disabledOptions={[coarseModifier]}
-            formatLabel={(option) => FINE_MODIFIER_LABELS[option]}
-            onChange={(fineModifier) => patchScrub({ fineModifier })}
-          />
-        </SettingsField>
-
-        <SettingsField label="Coarse step">
+        <SettingsField label="Large step (Shift)">
           <SettingsScrubNumberField
-            aria-label="Coarse step"
+            aria-label="Large step"
             min={1}
             max={100}
             settings={settings}
             step={1}
-            value={settings.scrub.shiftStep}
-            onChange={(shiftStep) => patchScrub({ shiftStep })}
-          />
-        </SettingsField>
-
-        <SettingsField label="Coarse modifier">
-          <TextSelect
-            value={coarseModifier}
-            options={COARSE_MODIFIER_OPTIONS}
-            disabledOptions={[fineModifier]}
-            formatLabel={(option) => COARSE_MODIFIER_LABELS[option]}
-            onChange={(coarseModifier) => patchScrub({ coarseModifier })}
+            value={settings.largeStep ?? 10}
+            onChange={(largeStep) => patch({ largeStep })}
           />
         </SettingsField>
       </SettingsSection>
@@ -697,9 +595,7 @@ export function ScrubSettingsPanel({
             patchCalligraph({ autoSize: !settings.calligraph.autoSize })
           }
         />
-
       </SettingsSection>
     </div>
   )
 }
-

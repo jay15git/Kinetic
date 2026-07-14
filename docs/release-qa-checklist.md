@@ -2,7 +2,7 @@
 
 Use this checklist before publishing `@kinetic/scrub-number-field` to the shadcn registry.
 
-Automated coverage already exists for math utilities and `useNumberScrub` hook flows. This document covers manual browser and assistive-tech verification.
+Automated coverage exists for `ScrubNumberField` component flows. This document covers manual browser and assistive-tech verification.
 
 ## Accessibility
 

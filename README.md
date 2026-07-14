@@ -1,14 +1,14 @@
 # Kinetic
 
-Drag-to-scrub **Scrub Number Input** for React: click to type, animated digit transitions.
+Drag-to-scrub **Scrub Number Input** for React: click to type, animated digit transitions. Built on [Base UI NumberField](https://base-ui.com/react/components/number-field).
 
 Full API reference: [kinetic.itsjay.in](https://kinetic.itsjay.in/?tab=api) (Features tab).
 
 ## Features
 
-- Horizontal and vertical scrub with step, fine step, and coarse step controls
-- Click-to-edit with select-all or caret-at-click placement
-- Keyboard: Up/Down arrows, Shift (large step), fine modifier (Alt by default), Page Up/Down, Home/End
+- Horizontal and vertical scrub via Base UI `ScrubArea`
+- Click-to-edit with select-all on focus
+- Keyboard: Up/Down arrows, Alt (`smallStep`), Shift (`largeStep`), Home/End
 - Optional wheel scroll and logo-handle scrub surface
 - Bound feedback: shake or border pulse
 - Calligraph animated digits (slots or number variant)
@@ -43,7 +43,7 @@ pnpm dlx shadcn@latest add @kinetic/scrub-number-field
 1. **Install dependencies**
 
 ```bash
-pnpm add calligraph motion lucide-react
+pnpm add @base-ui/react calligraph motion lucide-react
 ```
 
 2. **Add shadcn components**
@@ -56,7 +56,6 @@ pnpm dlx shadcn@latest add input input-group
 
 - `components/ui/scrub-number-input.tsx`
 - `components/ui/scrub-number-input.css`
-- `lib/scrub-number-math.ts`
 - `lib/scrub-number-overflow.ts`
 - `hooks/use-controllable-state.tsx`
 
@@ -77,7 +76,7 @@ export function PositionField() {
       aria-label="X position"
       value={x}
       onValueChange={setX}
-      onValueCommit={(value) => console.log("committed", value)}
+      onValueCommitted={(value) => console.log("committed", value)}
       min={-500}
       max={500}
       step={1}
@@ -105,11 +104,11 @@ export function PositionField() {
   aria-label="Price"
   value={price}
   onValueChange={setPrice}
-  formatValue={(n) => n.toFixed(2)}
+  format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
 />
 ```
 
-Keep numeric formatting in `format` / `formatValue`.
+Use `format` (`Intl.NumberFormatOptions`) for display formatting — handled by Base UI NumberField.
 
 ### Display overflow
 
@@ -119,41 +118,24 @@ Fields stay a fixed width so digit animation does not shift layout. When a value
 - **Hover**: native `title` tooltip shows the full formatted value when truncated.
 - **Edit mode**: click always opens the full precision string — never a clipped preview.
 
-### Headless hook
-
-```tsx
-import {
-  ScrubNumberInput,
-  useNumberScrub,
-} from "@/components/ui/scrub-number-input"
-
-const scrub = useNumberScrub({
-  value,
-  onChange: setValue,
-  onValueCommit: handleCommit,
-  min: 0,
-  max: 100,
-  step: 0.1,
-})
-
-return <ScrubNumberInput aria-label="Amount" scrub={scrub} />
-```
-
 ## Main props (`ScrubNumberField`)
 
 | Prop | Type | Description |
 |------|------|-------------|
 | `value` | `number` | Controlled value |
 | `defaultValue` | `number` | Initial value when uncontrolled |
-| `onValueChange` | `(n: number) => void` | Fires on every change (scrub, keys, wheel) |
-| `onValueCommit` | `(n: number) => void` | Fires on blur/Enter after edit, or when scrub ends |
-| `defaultResetValue` | `number` | Target for double-click / fine-modifier+click reset |
+| `onValueChange` | `(n: number) => void` | Fires on every change |
+| `onValueCommitted` | `(n: number) => void` | Fires on blur after edit, or when scrub ends |
+| `defaultResetValue` | `number` | Target for double-click reset |
 | `min` / `max` | `number` | Clamp bounds |
-| `step` | `number` | Quantization increment (default `1`) |
-| `shiftStep` | `number` | Large step for Shift / Page Up/Down |
-| `format` | `FormatSettings` | Sign prefix (`alwaysShowSign`) |
-| `formatValue` | `(n: number) => string` | Custom display formatter |
-| `scrub` | `ScrubSettings` | Direction, sensitivity, fine/coarse step, wheel, feedback |
+| `step` | `number` | Normal increment (default `1`) |
+| `smallStep` | `number` | Fine increment while Alt held (default `0.1`) |
+| `largeStep` | `number` | Coarse increment while Shift held (default `10`) |
+| `allowWheelScrub` | `boolean` | Wheel nudge while focused |
+| `direction` | `"horizontal" \| "vertical"` | Scrub axis |
+| `pixelSensitivity` | `number` | Pixels per step while scrubbing (default `2`) |
+| `format` | `Intl.NumberFormatOptions` | Display formatting |
+| `boundFeedback` | `"none" \| "shake" \| "borderPulse"` | Feedback at min/max |
 | `calligraph` | `CalligraphSettings` | Digit animation variant |
 | `inputSettings` | `InputSettings` | Select-on-edit |
 | `logo` | `LogoSettings` | Handle icon scrub mode |
@@ -161,33 +143,21 @@ return <ScrubNumberInput aria-label="Amount" scrub={scrub} />
 | `label` | `string` | Optional side label |
 | `disabled` | `boolean` | Disable interaction |
 
-## Scroll settings
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `step` | `1` | Normal increment (drag, wheel, Up/Down arrows) |
-| `scrub.fineStep` | `step / 10` | Fine increment (modifier + drag / wheel / Up/Down arrows) |
-| `scrub.fineModifier` | `"alt"` | Key for fine step: `"shift"`, `"alt"`, or `"meta"` |
-| `scrub.shiftStep` | `10` | Coarse increment (modifier + drag / wheel / Up/Down arrows) |
-| `scrub.coarseModifier` | `"shift"` | Key for coarse step: `"shift"`, `"alt"`, or `"meta"` |
-| `scrub.sensitivity` | `1` | Pixels per step unit while dragging |
-| `scrub.threshold` | `3` | Pointer movement (px) before scrub starts |
-| `scrub.wheelEnabled` | `false` | Enable wheel scroll |
-| `scrub.wheelSensitivity` | `20` | Accumulated wheel delta (px) per step when wheel is enabled |
-
 ## Gestures
 
 | Action | Result |
 |--------|--------|
-| Drag field | Scrub by step |
-| Fine modifier + drag / Up/Down arrows / wheel | Fine step |
-| Coarse modifier + drag / Up/Down arrows / Page Up-Down / wheel | Coarse step |
-| Wheel | Stepped scroll using the same step ladder (with fine/coarse modifiers) |
+| Drag field / handle | Scrub by `step` |
+| Alt + drag / arrows / wheel | `smallStep` |
+| Shift + drag / arrows / wheel | `largeStep` |
+| Wheel (`allowWheelScrub`) | Step while focused |
 | Click field | Enter edit mode |
 | Home / End | Jump to min / max |
-| Double-click / fine-modifier+click | Reset to `defaultResetValue` |
+| Double-click | Reset to `defaultResetValue` |
 | Enter | Commit edit |
 | Escape | Revert edit |
+
+Modifier keys follow Base UI NumberField conventions (Alt = fine, Shift = coarse).
 
 ## Publishing
 
@@ -215,7 +185,7 @@ Outputs `public/r/scrub-number-field.json`. Test against `http://localhost:3000/
 ```bash
 pnpm install
 pnpm dev              # home at http://localhost:3000, demo at /demo
-pnpm test             # unit tests for math/format helpers
+pnpm test
 pnpm lint
 pnpm build            # registry:build + next build
 pnpm registry:build

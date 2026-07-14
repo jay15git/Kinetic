@@ -3,10 +3,8 @@
 import { useState, type ReactNode } from "react"
 import { ChevronDownIcon } from "lucide-react"
 
-import { CodeBlock } from "@/components/code-block"
 import {
   API_REFERENCE_SECTIONS,
-  HEADLESS_USAGE_CODE,
   SCRUB_GESTURES,
   type ApiGestureRow,
   type ApiReferenceRow,
@@ -230,18 +228,6 @@ export function ScrubApiPanel() {
       ))}
 
       <ApiGestureSectionAccordion openId={openId} onToggle={handleToggle} />
-
-      <section className="landing-api-section">
-        <h4 className="landing-api-section-title">Headless</h4>
-        <p className="landing-hint !mt-0">
-          Use{" "}
-          <code className="font-mono text-[var(--landing-ink-2)]">useNumberScrub</code>{" "}
-          with{" "}
-          <code className="font-mono text-[var(--landing-ink-2)]">ScrubNumberInput</code>{" "}
-          for custom layouts.
-        </p>
-        <CodeBlock label="Headless" code={HEADLESS_USAGE_CODE} />
-      </section>
     </div>
   )
 }

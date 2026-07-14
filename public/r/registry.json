@@ -10,6 +10,7 @@
       "description": "Scrub number input with drag-to-scrub, click-to-edit, Calligraph digit animation, keyboard and wheel nudging.",
       "author": "jay15git",
       "dependencies": [
+        "@base-ui/react",
         "calligraph",
         "lucide-react",
         "motion"
@@ -33,11 +34,6 @@
           "path": "components/ui/scrub-number-input.css",
           "type": "registry:ui",
           "target": "@components/ui/scrub-number-input.css"
-        },
-        {
-          "path": "lib/scrub-number-math.ts",
-          "type": "registry:lib",
-          "target": "@lib/scrub-number-math.ts"
         },
         {
           "path": "lib/scrub-number-overflow.ts",

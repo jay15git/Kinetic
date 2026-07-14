@@ -1,9 +1,8 @@
 import {
   DEFAULT_CALLIGRAPH_SETTINGS,
-  DEFAULT_FORMAT_SETTINGS,
   DEFAULT_INPUT_SETTINGS,
   DEFAULT_LOGO_SETTINGS,
-  DEFAULT_SCRUB_SETTINGS,
+  DEFAULT_SCRUB_FIELD_SETTINGS,
   type ScrubFieldSettings,
 } from "@/components/ui/scrub-number-input"
 
@@ -64,9 +63,7 @@ export function formatScrubFieldPropsCode(settings: ScrubFieldSettings): string 
     "onValueChange={setValue}",
   ]
 
-  const scrub = diffFromDefaults(settings.scrub, DEFAULT_SCRUB_SETTINGS)
   const calligraph = diffFromDefaults(settings.calligraph, DEFAULT_CALLIGRAPH_SETTINGS)
-  const format = diffFromDefaults(settings.format, DEFAULT_FORMAT_SETTINGS)
   const inputSettings = diffFromDefaults(settings.input, DEFAULT_INPUT_SETTINGS)
   const logo = diffFromDefaults(settings.logo, DEFAULT_LOGO_SETTINGS)
 
@@ -82,16 +79,39 @@ export function formatScrubFieldPropsCode(settings: ScrubFieldSettings): string 
     attributes.push(formatJsxAttribute("step", settings.step))
   }
 
-  if (scrub) {
-    attributes.push(formatJsxAttribute("scrub", scrub))
+  if (settings.smallStep != null && settings.smallStep !== 0.1) {
+    attributes.push(formatJsxAttribute("smallStep", settings.smallStep))
+  }
+
+  if (settings.largeStep != null && settings.largeStep !== 10) {
+    attributes.push(formatJsxAttribute("largeStep", settings.largeStep))
+  }
+
+  if (settings.direction != null && settings.direction !== "horizontal") {
+    attributes.push(formatJsxAttribute("direction", settings.direction))
+  }
+
+  if (
+    settings.pixelSensitivity != null &&
+    settings.pixelSensitivity !== 2
+  ) {
+    attributes.push(formatJsxAttribute("pixelSensitivity", settings.pixelSensitivity))
+  }
+
+  if (settings.allowWheelScrub) {
+    attributes.push(formatJsxAttribute("allowWheelScrub", true))
+  }
+
+  if (settings.boundFeedback != null && settings.boundFeedback !== "none") {
+    attributes.push(formatJsxAttribute("boundFeedback", settings.boundFeedback))
+  }
+
+  if (settings.format) {
+    attributes.push(formatJsxAttribute("format", settings.format))
   }
 
   if (calligraph) {
     attributes.push(formatJsxAttribute("calligraph", calligraph))
-  }
-
-  if (format) {
-    attributes.push(formatJsxAttribute("format", format))
   }
 
   if (inputSettings) {

@@ -16,40 +16,60 @@ export const SCRUB_NUMBER_FIELD_PROPS: ApiReferenceRow[] = [
   {
     name: "onValueChange",
     type: "(n: number) => void",
-    description: "Fires on every change (scrub, keys, wheel)",
+    description: "Fires on every change (scrub, keys, wheel, typing)",
   },
   {
-    name: "onValueCommit",
+    name: "onValueCommitted",
     type: "(n: number) => void",
-    description: "Fires on blur/Enter after edit, or when scrub ends",
+    description: "Fires on blur after edit, or when scrub / wheel ends",
   },
   {
     name: "defaultResetValue",
     type: "number",
-    description: "Target for double-click / fine-modifier+click reset",
+    description: "Target for double-click reset",
   },
   { name: "min", type: "number", description: "Clamp lower bound" },
   { name: "max", type: "number", description: "Clamp upper bound" },
-  { name: "step", type: "number", description: "Quantization increment", defaultValue: "1" },
+  { name: "step", type: "number", description: "Normal increment", defaultValue: "1" },
   {
-    name: "shiftStep",
+    name: "smallStep",
     type: "number",
-    description: "Large step for Shift / Page Up/Down",
+    description: "Fine increment while Alt is held",
+    defaultValue: "0.1",
+  },
+  {
+    name: "largeStep",
+    type: "number",
+    description: "Coarse increment while Shift is held",
+    defaultValue: "10",
+  },
+  {
+    name: "allowWheelScrub",
+    type: "boolean",
+    description: "Wheel nudge while focused",
+    defaultValue: "false",
+  },
+  {
+    name: "direction",
+    type: '"horizontal" | "vertical"',
+    description: "Scrub axis",
+    defaultValue: '"horizontal"',
+  },
+  {
+    name: "pixelSensitivity",
+    type: "number",
+    description: "Pixels per step while scrubbing (higher = less sensitive)",
+    defaultValue: "2",
   },
   {
     name: "format",
-    type: "FormatSettings",
-    description: "Sign prefix (`alwaysShowSign`)",
+    type: "Intl.NumberFormatOptions",
+    description: "Display formatting (Base UI NumberField)",
   },
   {
-    name: "formatValue",
-    type: "(n: number) => string",
-    description: "Custom display formatter",
-  },
-  {
-    name: "scrub",
-    type: "ScrubSettings",
-    description: "Direction, sensitivity, fine/coarse step, wheel, feedback",
+    name: "boundFeedback",
+    type: '"none" | "shake" | "borderPulse"',
+    description: "Feedback when value hits min or max",
   },
   {
     name: "calligraph",
@@ -69,75 +89,6 @@ export const SCRUB_NUMBER_FIELD_PROPS: ApiReferenceRow[] = [
   },
   { name: "label", type: "string", description: "Optional side label" },
   { name: "disabled", type: "boolean", description: "Disable interaction" },
-]
-
-export const SCRUB_SETTINGS_ROWS: ApiReferenceRow[] = [
-  {
-    name: "step",
-    type: "number",
-    defaultValue: "1",
-    description: "Normal increment (drag, wheel, Up/Down arrows)",
-  },
-  {
-    name: "scrub.fineStep",
-    type: "number",
-    defaultValue: "step / 10",
-    description: "Fine increment (modifier + drag / wheel / Up/Down arrows)",
-  },
-  {
-    name: "scrub.fineModifier",
-    type: '"shift" | "alt" | "meta"',
-    defaultValue: '"alt"',
-    description: "Key for fine step",
-  },
-  {
-    name: "scrub.shiftStep",
-    type: "number",
-    defaultValue: "10",
-    description: "Coarse increment (modifier + drag / wheel / Up/Down arrows)",
-  },
-  {
-    name: "scrub.coarseModifier",
-    type: '"shift" | "alt" | "meta"',
-    defaultValue: '"shift"',
-    description: "Key for coarse step",
-  },
-  {
-    name: "scrub.sensitivity",
-    type: "number",
-    defaultValue: "1",
-    description: "Pixels per step unit while dragging",
-  },
-  {
-    name: "scrub.threshold",
-    type: "number",
-    defaultValue: "3",
-    description: "Pointer movement (px) before scrub starts",
-  },
-  {
-    name: "scrub.wheelEnabled",
-    type: "boolean",
-    defaultValue: "false",
-    description: "Enable wheel scroll",
-  },
-  {
-    name: "scrub.wheelSensitivity",
-    type: "number",
-    defaultValue: "20",
-    description: "Accumulated wheel delta (px) per step when wheel is enabled",
-  },
-  {
-    name: "scrub.direction",
-    type: '"horizontal" | "vertical"',
-    defaultValue: '"horizontal"',
-    description: "Scrub axis while dragging",
-  },
-  {
-    name: "scrub.boundFeedback",
-    type: '"none" | "shake" | "borderPulse"',
-    defaultValue: '"none"',
-    description: "Feedback when value hits min or max",
-  },
 ]
 
 export const CALLIGRAPH_SETTINGS_ROWS: ApiReferenceRow[] = [
@@ -176,15 +127,6 @@ export const INPUT_SETTINGS_ROWS: ApiReferenceRow[] = [
   },
 ]
 
-export const FORMAT_SETTINGS_ROWS: ApiReferenceRow[] = [
-  {
-    name: "format.alwaysShowSign",
-    type: "boolean",
-    defaultValue: "false",
-    description: "Always prefix positive values with +",
-  },
-]
-
 export const LOGO_SETTINGS_ROWS: ApiReferenceRow[] = [
   {
     name: "logo.enabled",
@@ -201,25 +143,13 @@ export const LOGO_SETTINGS_ROWS: ApiReferenceRow[] = [
 ]
 
 export const SCRUB_GESTURES: ApiGestureRow[] = [
-  { action: "Drag field", result: "Scrub by step" },
-  {
-    action: "Fine modifier + drag / Up/Down / wheel",
-    result: "Fine step",
-  },
-  {
-    action: "Coarse modifier + drag / Up/Down / Page Up-Down / wheel",
-    result: "Coarse step",
-  },
-  {
-    action: "Wheel",
-    result: "Stepped scroll using the same step ladder (with fine/coarse modifiers)",
-  },
+  { action: "Drag field / handle", result: "Scrub by step (Base UI ScrubArea)" },
+  { action: "Alt + drag / Up/Down / wheel", result: "smallStep" },
+  { action: "Shift + drag / Up/Down / wheel", result: "largeStep" },
+  { action: "Wheel (allowWheelScrub)", result: "Step while focused" },
   { action: "Click field", result: "Enter edit mode" },
   { action: "Home / End", result: "Jump to min / max" },
-  {
-    action: "Double-click / fine-modifier+click",
-    result: "Reset to defaultResetValue",
-  },
+  { action: "Double-click", result: "Reset to defaultResetValue" },
   { action: "Enter", result: "Commit edit" },
   { action: "Escape", result: "Revert edit" },
 ]
@@ -235,7 +165,7 @@ export const HOW_IT_WORKS_GESTURES: ApiGestureRow[] = [
   },
   {
     action: "Arrow keys",
-    result: "Nudge by step — Shift and Alt modifiers apply coarse and fine steps",
+    result: "Nudge by step — Alt and Shift modifiers apply fine and coarse steps",
   },
   { action: "Home / End", result: "Jump to min or max" },
   { action: "Enter / Escape", result: "Commit or revert edit" },
@@ -245,22 +175,6 @@ export const HOW_IT_WORKS_GESTURES: ApiGestureRow[] = [
   },
 ]
 
-export const HEADLESS_USAGE_CODE = `import {
-  ScrubNumberInput,
-  useNumberScrub,
-} from "@/components/ui/scrub-number-input"
-
-const scrub = useNumberScrub({
-  value,
-  onChange: setValue,
-  onValueCommit: handleCommit,
-  min: 0,
-  max: 100,
-  step: 0.1,
-})
-
-return <ScrubNumberInput aria-label="Amount" scrub={scrub} />`
-
 export type ApiReferenceSection = {
   id: string
   title: string
@@ -269,9 +183,10 @@ export type ApiReferenceSection = {
 
 export const API_REFERENCE_SECTIONS: ApiReferenceSection[] = [
   { id: "props", title: "ScrubNumberField", rows: SCRUB_NUMBER_FIELD_PROPS },
-  { id: "scrub", title: "Scrub settings", rows: SCRUB_SETTINGS_ROWS },
   { id: "calligraph", title: "Calligraph", rows: CALLIGRAPH_SETTINGS_ROWS },
   { id: "input", title: "Input", rows: INPUT_SETTINGS_ROWS },
-  { id: "format", title: "Format", rows: FORMAT_SETTINGS_ROWS },
   { id: "logo", title: "Logo handle", rows: LOGO_SETTINGS_ROWS },
 ]
+
+export const BASE_UI_NUMBER_FIELD_URL =
+  "https://base-ui.com/react/components/number-field"

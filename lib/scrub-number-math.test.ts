@@ -631,16 +631,16 @@ describe("normalizeScrubFieldSettings", () => {
     expect(normalized.scrub.fineStep).toBe(0.1)
   })
 
-  it("maps rubberBand bound feedback to none", () => {
+  it("preserves bound feedback modes", () => {
     const normalized = normalizeScrubFieldSettings({
       ...DEFAULT_SCRUB_FIELD_SETTINGS,
       scrub: {
         ...DEFAULT_SCRUB_FIELD_SETTINGS.scrub,
-        boundFeedback: "rubberBand",
+        boundFeedback: "shake",
       },
     })
 
-    expect(normalized.scrub.boundFeedback).toBe("none")
+    expect(normalized.scrub.boundFeedback).toBe("shake")
   })
 
   it("resolves duplicate fine and coarse modifiers", () => {

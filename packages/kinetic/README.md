@@ -1,6 +1,6 @@
 # kinetic
 
-Figma-style scrub number field for React apps using [shadcn/ui](https://ui.shadcn.com) (base-nova).
+Scrub number field for React apps using [shadcn/ui](https://ui.shadcn.com) (base-nova).
 
 ## Install
 
@@ -27,7 +27,7 @@ Requires `input` and `input-group` from shadcn in your project.
 The registry item also installs:
 
 - `components/ui/scrub-number-input.tsx` and `.css`
-- `lib/scrub-number-math.ts`, `lib/scrub-number-overflow.ts`, `lib/springs.ts`
+- `lib/scrub-number-math.ts`, `lib/scrub-number-overflow.ts`
 - `hooks/use-controllable-state.tsx`
 
 ## Keyboard shortcuts
@@ -91,7 +91,7 @@ import { ScrubNumberField } from "kinetic"
 />
 ```
 
-See the [demo](https://kinetic.itsjay.in/demo) and [source](https://github.com/jay15git/kinetic) for full settings and presets.
+See the [demo](https://kinetic.itsjay.in/demo) and [source](https://github.com/jay15git/kinetic) for full settings.
 
 ## License
 

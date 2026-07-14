@@ -1,17 +1,16 @@
 # Kinetic
 
-A shadcn-style **scrub number input** for React: drag to change values, click to type, animated digit transitions, and design-tool ergonomics.
+A shadcn-style **scrub number input** for React: drag to change values, click to type, animated digit transitions.
 
 ## Features
 
 - Horizontal and vertical scrub with step, fine step, and coarse step controls
 - Click-to-edit with select-all or caret-at-click placement
-- Keyboard: Up/Down arrows, Shift (large step), fine modifier (Alt on Windows/Linux, Cmd on Mac by default), Page Up/Down, Home/End
-- Optional wheel scroll, label scrub, and logo-handle scrub surfaces
-- Bound feedback: rubber band, shake, border pulse, or combo
+- Keyboard: Up/Down arrows, Shift (large step), fine modifier (Alt by default), Page Up/Down, Home/End
+- Optional wheel scroll and logo-handle scrub surface
+- Bound feedback: shake or border pulse
 - Calligraph animated digits (slots or number variant)
-- Figma-style overflow: centered by default; when too long, trailing digits stay visible and leading digits are masked; full value on edit and in tooltip when truncated
-- Theme presets and four built-in field presets
+- Overflow: left-aligned values; long values clip on the right, full value on hover/edit
 
 ## Installation
 
@@ -57,7 +56,6 @@ pnpm dlx shadcn@latest add input input-group
 - `components/ui/scrub-number-input.css`
 - `lib/scrub-number-math.ts`
 - `lib/scrub-number-overflow.ts`
-- `lib/springs.ts`
 - `hooks/use-controllable-state.tsx`
 
 4. **Update import paths** to match your `@/` aliases.
@@ -115,7 +113,7 @@ Keep numeric formatting in `format` / `formatValue`.
 
 Fields stay a fixed width so digit animation does not shift layout. When a value is too long:
 
-- **Display mode**: values are centered when they fit. When too long, least-significant digits stay visible on the right and leading digits are masked from the left.
+- **Display mode**: left-aligned; overflow clips on the right.
 - **Hover**: native `title` tooltip shows the full formatted value when truncated.
 - **Edit mode**: click always opens the full precision string — never a clipped preview.
 
@@ -139,27 +137,6 @@ const scrub = useNumberScrub({
 return <ScrubNumberInput aria-label="Amount" scrub={scrub} />
 ```
 
-## Presets
-
-Import presets from [`components/scrub-settings-panel.tsx`](components/scrub-settings-panel.tsx):
-
-| Preset   | Character                         |
-|----------|-----------------------------------|
-| `figma`  | Label scrub, slot digits, snappy  |
-| `compact`| Integer display, no select-on-edit|
-| `minimal`| Wheel scroll, right-aligned, sign |
-| `logo`   | Logo handle scrub, left-aligned   |
-
-```tsx
-import { SCRUB_FIELD_PRESETS } from "@/components/scrub-settings-panel"
-
-<ScrubNumberField
-  {...SCRUB_FIELD_PRESETS.figma}
-  value={x}
-  onValueChange={setX}
-/>
-```
-
 ## Main props (`ScrubNumberField`)
 
 | Prop | Type | Description |
@@ -172,14 +149,14 @@ import { SCRUB_FIELD_PRESETS } from "@/components/scrub-settings-panel"
 | `min` / `max` | `number` | Clamp bounds |
 | `step` | `number` | Quantization increment (default `1`) |
 | `shiftStep` | `number` | Large step for Shift / Page Up/Down |
-| `format` | `FormatSettings` | Sign prefix, aria clamp text |
+| `format` | `FormatSettings` | Sign prefix (`alwaysShowSign`) |
 | `formatValue` | `(n: number) => string` | Custom display formatter |
 | `scrub` | `ScrubSettings` | Direction, sensitivity, fine/coarse step, wheel, feedback |
 | `calligraph` | `CalligraphSettings` | Digit animation variant |
-| `inputSettings` | `InputSettings` | Align, numeric-only edit (default), select-on-edit |
+| `inputSettings` | `InputSettings` | Select-on-edit |
 | `logo` | `LogoSettings` | Handle icon scrub mode |
 | `grouped` | `boolean` | Borderless control for use inside `InputGroup` |
-| `label` | `string` | Optional side label (scrubbable when enabled) |
+| `label` | `string` | Optional side label |
 | `disabled` | `boolean` | Disable interaction |
 
 ## Scroll settings

@@ -7,7 +7,7 @@
       "name": "scrub-number-field",
       "type": "registry:ui",
       "title": "Scrub Number Field",
-      "description": "Figma-style scrub number input with drag-to-scrub, click-to-edit, Calligraph digit animation, keyboard and wheel nudging.",
+      "description": "Scrub number input with drag-to-scrub, click-to-edit, Calligraph digit animation, keyboard and wheel nudging.",
       "author": "jay15git",
       "dependencies": [
         "calligraph",
@@ -43,11 +43,6 @@
           "path": "lib/scrub-number-overflow.ts",
           "type": "registry:lib",
           "target": "@lib/scrub-number-overflow.ts"
-        },
-        {
-          "path": "lib/springs.ts",
-          "type": "registry:lib",
-          "target": "@lib/springs.ts"
         },
         {
           "path": "hooks/use-controllable-state.tsx",

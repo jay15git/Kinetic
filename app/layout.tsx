@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Kinetic — scrub number input for React",
   description:
-    "Drag-to-scrub number fields with animated digits. A shadcn registry component with design-tool ergonomics.",
+    "Drag-to-scrub number fields with animated digits. A shadcn registry component for React.",
 }
 
 export default function RootLayout({

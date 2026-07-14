@@ -24,7 +24,7 @@ import {
   Percent,
   type LucideIcon,
 } from "lucide-react"
-import { useReducedMotion, animate, motion, useMotionValue } from "motion/react"
+import { useReducedMotion, motion } from "motion/react"
 
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group"
 import { Input } from "@/components/ui/input"
@@ -64,7 +64,6 @@ import {
   type FineModifier,
 } from "@/lib/scrub-number-math"
 import { cn } from "@/lib/utils"
-import { spring } from "@/lib/springs"
 import { cva } from "class-variance-authority"
 
 import "./scrub-number-input.css"
@@ -142,13 +141,11 @@ export const DEFAULT_FORMAT_SETTINGS: FormatSettings = {
 
 export type BoundFeedbackMode =
   | "none"
-  | "rubberBand"
   | "shake"
   | "borderPulse"
 
 export const BOUND_FEEDBACK_MODES = [
   "none",
-  "rubberBand",
   "shake",
   "borderPulse",
 ] as const satisfies readonly BoundFeedbackMode[]
@@ -328,12 +325,7 @@ export function normalizeScrubFieldSettings(
       shiftStep,
       threshold,
       wheelSensitivity,
-      boundFeedback:
-        scrub.boundFeedback === "rubberBand"
-          ? "none"
-          : (scrub.boundFeedback as string) === "combo"
-            ? "shake"
-            : scrub.boundFeedback,
+      boundFeedback: scrub.boundFeedback,
     },
     calligraph: { ...DEFAULT_CALLIGRAPH_SETTINGS, ...settings.calligraph },
     input: {
@@ -566,8 +558,6 @@ function focusInputForEdit(
   focusCaretAtEnd(input)
 }
 
-const RUBBER_BAND_MAX_OFFSET = 6
-
 const SCRUB_BOUND_FEEDBACK_MS = 80 * 2 + 60 * 2
 
 const SCRUB_BOUND_REVERT_HOLD_MS = 600
@@ -590,82 +580,33 @@ function ScrubBoundFeedback({
   boundFeedback,
   children,
   className,
-  direction,
   mode,
   onFeedbackComplete,
 }: {
   boundFeedback: BoundFeedbackState | null
   children: React.ReactNode
   className?: string
-  direction: ScrubSettings["direction"]
   mode: BoundFeedbackMode
   onFeedbackComplete: () => void
 }) {
   const shouldReduceMotion = useReducedMotion()
-  const offsetX = useMotionValue(0)
-  const offsetY = useMotionValue(0)
   const wrapRef = useRef<HTMLDivElement>(null)
   const [boundHit, setBoundHit] = useState<"min" | "max" | null>(null)
   const [boundError, setBoundError] = useState(false)
-  const scrubbingAtEdgeRef = useRef(false)
 
   useEffect(() => {
     if (!boundFeedback || mode === "none") {
-      scrubbingAtEdgeRef.current = false
-      offsetX.set(0)
-      offsetY.set(0)
       setBoundError(false)
       return
     }
 
-    const activeMode = mode
-    const sign = boundFeedback.edge === "min" ? -1 : 1
-    const axis = direction === "vertical" ? offsetY : offsetX
-    const otherAxis = direction === "vertical" ? offsetX : offsetY
     const shakeTargets = wrapRef.current
       ? Array.from(
           wrapRef.current.querySelectorAll<HTMLElement>(".scrub-bound-field"),
         )
       : []
 
-    if (activeMode === "rubberBand") {
-      const stretch = Math.min(
-        RUBBER_BAND_MAX_OFFSET,
-        2 + Math.sqrt(boundFeedback.overflow) * 1.25,
-      )
-      const offset = sign * stretch
-
-      if (boundFeedback.source === "scrub") {
-        scrubbingAtEdgeRef.current = true
-        axis.set(shouldReduceMotion ? 0 : offset)
-        otherAxis.set(0)
-        return
-      }
-
-      scrubbingAtEdgeRef.current = false
-
-      if (shouldReduceMotion) {
-        axis.set(0)
-        otherAxis.set(0)
-        onFeedbackComplete()
-        return
-      }
-
-      const controls = animate(axis, [offset, 0], {
-        ...spring.fast,
-        onComplete: onFeedbackComplete,
-      })
-
-      return () => {
-        controls.stop()
-      }
-    }
-
-    scrubbingAtEdgeRef.current = false
-    axis.set(0)
-    otherAxis.set(0)
-
-    if (activeMode === "shake") {
+    if (mode === "shake") {
       setBoundError(true)
 
       if (!shouldReduceMotion && shakeTargets.length > 0) {
@@ -689,7 +630,7 @@ function ScrubBoundFeedback({
       }
     }
 
-    if (activeMode === "borderPulse") {
+    if (mode === "borderPulse") {
       setBoundHit(boundFeedback.edge)
       const timeout = window.setTimeout(() => {
         setBoundHit(null)
@@ -702,20 +643,16 @@ function ScrubBoundFeedback({
     }
   }, [
     boundFeedback,
-    direction,
     mode,
-    offsetX,
-    offsetY,
     onFeedbackComplete,
     shouldReduceMotion,
   ])
 
   return (
-    <motion.div className={className} style={{ x: offsetX, y: offsetY }}>
+    <div className={className}>
       <div
         ref={wrapRef}
         data-slot="scrub-bound-feedback"
-        data-bound-direction={direction}
         data-bound-hit={boundHit ?? undefined}
         className={cn(
           "scrub-bound-wrap",
@@ -724,7 +661,7 @@ function ScrubBoundFeedback({
       >
         {children}
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -939,16 +876,11 @@ export function useNumberScrub({
         return
       }
 
-      const isContinuousScrubRubberBand =
-        source === "scrub" && scrub.boundFeedback === "rubberBand"
-
-      if (!isContinuousScrubRubberBand && boundFeedbackLatchedRef.current[edge]) {
+      if (boundFeedbackLatchedRef.current[edge]) {
         return
       }
 
-      if (!isContinuousScrubRubberBand) {
-        boundFeedbackLatchedRef.current[edge] = true
-      }
+      boundFeedbackLatchedRef.current[edge] = true
 
       boundFeedbackTickRef.current += 1
       setBoundFeedback({
@@ -2184,7 +2116,6 @@ export function ScrubNumberInput({
       <ScrubBoundFeedback
         boundFeedback={scrub.boundFeedback}
         className={usesInputGroup || grouped ? "w-full min-w-0" : undefined}
-        direction={scrubSettings.direction}
         mode={scrubSettings.boundFeedback}
         onFeedbackComplete={scrub.clearBoundFeedback}
       >

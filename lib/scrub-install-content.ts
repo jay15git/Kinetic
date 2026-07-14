@@ -52,6 +52,7 @@ export function getScrubInstallContent(registryBaseUrl: string): ScrubInstallCon
     dependenciesCommand: `pnpm add ${dependencies}`,
     shadcnComponentsCommand: `pnpm dlx shadcn@latest add ${SCRUB_ITEM.registryDependencies.join(" ")}`,
     files,
-    importPathsNote: `// Update @/ import paths in copied files to match your tsconfig paths aliases.`,
+    importPathsNote:
+      "Update @/ import paths in copied files to match your tsconfig paths aliases.",
   }
 }

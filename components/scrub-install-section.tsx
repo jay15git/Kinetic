@@ -93,11 +93,7 @@ function ManualPanel({
         </InstallStep>
 
         <InstallStep title="Update import paths">
-          <CodeBlock
-            label="Reminder"
-            code={content.importPathsNote}
-            initialHighlightedHtml={highlighted.importPathsNote}
-          />
+          <p className="landing-hint !mt-0">{content.importPathsNote}</p>
         </InstallStep>
       </InstallSteps>
     </div>

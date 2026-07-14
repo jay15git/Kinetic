@@ -42,3 +42,8 @@ next-env.d.ts
 
 # local reference clones (not part of this repo)
 /.reference/
+
+# local agent skills / tooling (not part of product)
+/.agents/
+/.claude/
+/skills-lock.json

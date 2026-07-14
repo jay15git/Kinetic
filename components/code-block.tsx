@@ -249,21 +249,17 @@ export function CodeBlock({
   initialHighlightedHtml?: string
 }) {
   const resolvedLanguage = resolveLanguage(label, language)
-  const lineNumbers = code.split("\n").length > 2
   const { copied, onCopy } = useCopyCode(code)
 
   return (
     <div className={cn(shellClassName, className)}>
       <CodeBlockHeader label={label} copied={copied} onCopy={onCopy} />
-      <CodeBlockScroll
-        className="max-h-96"
-        orientation={lineNumbers ? "both" : "vertical"}
-      >
+      <CodeBlockScroll className="max-h-96">
         <CodeblockShiki
           code={code}
           language={resolvedLanguage}
-          lineNumbers={lineNumbers}
-          wordWrap={!lineNumbers}
+          lineNumbers={false}
+          wordWrap
           initialHtml={initialHighlightedHtml}
         />
       </CodeBlockScroll>
@@ -290,12 +286,12 @@ export function FileCodeBlock({
   return (
     <div className={cn(shellClassName, className)}>
       <CodeBlockHeader label={title} copied={copied} onCopy={onCopy} />
-      <CodeBlockScroll className="max-h-72" orientation="both">
+      <CodeBlockScroll className="max-h-72">
         <CodeblockShiki
           code={code}
           language={resolvedLanguage}
-          lineNumbers
-          wordWrap={false}
+          lineNumbers={false}
+          wordWrap
           initialHtml={initialHighlightedHtml}
         />
       </CodeBlockScroll>

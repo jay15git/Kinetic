@@ -1,10 +1,5 @@
 import { useLayoutEffect, useState, type RefObject } from "react"
 
-/**
- * Detects when display content overflows its container (scrollWidth > clientWidth).
- * Used for Figma-style right-anchored number fields: leading digits are masked,
- * trailing digits stay visible, and consumers can expose the full value via title/aria.
- */
 function measureContentOverflow(
   container: HTMLElement | null,
   content: HTMLElement | null,

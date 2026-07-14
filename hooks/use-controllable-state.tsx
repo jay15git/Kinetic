@@ -1,21 +1,7 @@
 import * as React from "react"
 
-// use-layout-effect.tsx
-// https://github.com/radix-ui/primitives/blob/main/packages/react/use-layout-effect/src/use-layout-effect.tsx
-
-/**
- * On the server, React emits a warning when calling `useLayoutEffect`.
- * This is because neither `useLayoutEffect` nor `useEffect` run on the server.
- * We use this safe version which suppresses the warning by replacing it with a noop on the server.
- *
- * See: https://reactjs.org/docs/hooks-reference.html#uselayouteffect
- */
 const useLayoutEffect = globalThis?.document ? React.useLayoutEffect : () => {}
 
-// use-controllable-state.tsx
-// https://github.com/radix-ui/primitives/blob/main/packages/react/use-controllable-state/src/use-controllable-state.tsx
-
-// Prevent bundlers from trying to optimize the import
 const useInsertionEffect: typeof useLayoutEffect =
   (React as never)[" useInsertionEffect ".trim().toString()] || useLayoutEffect
 
@@ -43,9 +29,6 @@ export function useControllableState<T>({
   const isControlled = prop !== undefined
   const value = isControlled ? prop : uncontrolledProp
 
-  // OK to disable conditionally calling hooks here because they will always run
-  // consistently in the same environment. Bundlers should be able to remove the
-  // code block entirely in production.
   /* eslint-disable react-hooks/rules-of-hooks */
   if (process.env.NODE_ENV !== "production") {
     const isControlledRef = React.useRef(prop !== undefined)

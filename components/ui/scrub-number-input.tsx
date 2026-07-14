@@ -1,15 +1,3 @@
-/**
- * Scrub Number Input — self-contained copy-paste module
- *
- * Horizontal scrub + click-to-edit number field with Calligraph slot-digit animation.
- *
- * ## Display overflow
- *
- * Values stay left-aligned; overflow is clipped on the right. Hover shows the full
- * value via `title` when truncated; screen readers get `aria-valuetext`. Click-to-edit
- * Click-to-edit opens the full string. When the value overflows horizontally,
- * the input scrolls to keep the caret visible instead of forcing it to the end.
- */
 "use client"
 
 import {
@@ -181,17 +169,9 @@ export type ScrubSettings = {
   threshold?: number
   wheelEnabled: boolean
   boundFeedback: BoundFeedbackMode
-  /** Step used while the fine modifier is held. Defaults to step / 10. */
   fineStep?: number
-  /**
-   * Key held for fine step.
-   */
   fineModifier?: FineModifier
-  /**
-   * Key held for coarse step.
-   */
   coarseModifier?: CoarseModifier
-  /** Accumulated wheel delta (px) required before one step fires. */
   wheelSensitivity?: number
 }
 
@@ -588,7 +568,6 @@ function focusInputForEdit(
 
 const RUBBER_BAND_MAX_OFFSET = 6
 
-// Keep in sync with --scrub-bound-feedback-ms in scrub-number-input.css
 const SCRUB_BOUND_FEEDBACK_MS = 80 * 2 + 60 * 2
 
 const SCRUB_BOUND_REVERT_HOLD_MS = 600
@@ -1389,7 +1368,6 @@ export function useNumberScrub({
         try {
           state.captureTarget.releasePointerCapture(event.pointerId)
         } catch {
-          // Pointer capture may already be released.
         }
       }
 
@@ -1505,7 +1483,6 @@ export function useNumberScrub({
       try {
         captureTarget.setPointerCapture(pointerId)
       } catch {
-        // Pointer capture may be unavailable.
       }
     },
     [],
@@ -1988,8 +1965,6 @@ export function ScrubNumberInput({
   disabled,
   grouped = false,
   inputClassName,
-  // Strip from ...props so it is not forwarded to the DOM input.
-  // selectOnEdit is applied upstream via useNumberScrub.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- API parity only
   inputSettings = DEFAULT_INPUT_SETTINGS,
   logo = DEFAULT_LOGO_SETTINGS,

@@ -8,7 +8,6 @@ export type ScrubInstallHighlighted = {
   dependenciesCommand: string
   shadcnComponentsCommand: string
   files: Record<string, string>
-  importPathsNote: string
 }
 
 export async function getScrubInstallHighlighted(
@@ -19,21 +18,17 @@ export async function getScrubInstallHighlighted(
     registrySnippet,
     dependenciesCommand,
     shadcnComponentsCommand,
-    importPathsNote,
   ] = await Promise.all([
     codeToHighlightedHtml(content.command, "bash"),
-    codeToHighlightedHtml(content.registrySnippet, "json", { lineNumbers: true }),
+    codeToHighlightedHtml(content.registrySnippet, "json"),
     codeToHighlightedHtml(content.dependenciesCommand, "bash"),
     codeToHighlightedHtml(content.shadcnComponentsCommand, "bash"),
-    codeToHighlightedHtml(content.importPathsNote, "ts"),
   ])
 
   const fileEntries = await Promise.all(
     content.files.map(async (file) => [
       file.path,
-      await codeToHighlightedHtml(file.content, resolveCodeLanguage(file.target), {
-        lineNumbers: true,
-      }),
+      await codeToHighlightedHtml(file.content, resolveCodeLanguage(file.target)),
     ]),
   )
 
@@ -43,6 +38,5 @@ export async function getScrubInstallHighlighted(
     dependenciesCommand,
     shadcnComponentsCommand,
     files: Object.fromEntries(fileEntries),
-    importPathsNote,
   }
 }

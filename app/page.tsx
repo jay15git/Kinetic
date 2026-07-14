@@ -13,7 +13,7 @@ export default function Home() {
         <div className="landing-lede">
           <p className="landing-tagline">
             Drag-to-scrub number fields with animated digits. Click to edit,
-            keyboard to nudge — design-tool ergonomics for React.
+            arrow up/down keys to nudge.
           </p>
           <LandingMit />
         </div>

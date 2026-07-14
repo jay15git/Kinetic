@@ -391,7 +391,6 @@ export function resolveDisplayDecimalPlaces(
   return fromStep > 0 ? fromStep : null
 }
 
-/** Minimal display by default; decimals only after the user typed them. */
 export function formatDisplayValue(
   value: number,
   format: Pick<DisplayFormat, "alwaysShowSign">,
@@ -540,7 +539,6 @@ export function applyStepDelta(
   return quantizeNumber(next, quantizeStep)
 }
 
-/** Keeps the visible draft string when entering edit if it still matches the numeric value. */
 export function preserveDisplayDraft(
   currentDraft: string,
   value: number,
@@ -592,7 +590,6 @@ export function resolveFineStep(step: number, fineStep?: number) {
   return quantizeNumber(step / 10, step) || step / 10
 }
 
-/** Keeps only characters valid while typing a numeric draft (+, -, digits, one dot). */
 export function sanitizeNumericDraft(value: string, previousValue = "") {
   if (value === "") {
     return ""

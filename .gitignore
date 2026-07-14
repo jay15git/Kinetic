@@ -46,4 +46,5 @@ next-env.d.ts
 # local agent skills / tooling (not part of product)
 /.agents/
 /.claude/
+/.cursor/
 /skills-lock.json

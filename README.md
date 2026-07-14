@@ -208,10 +208,6 @@ pnpm registry:validate
 
 Outputs `public/r/scrub-number-field.json`. Test against `http://localhost:3000/r/{name}.json` before deploy.
 
-### Future: npm
-
-A programmatic npm package may be added later. Registry is the recommended path for v1.
-
 ## Development
 
 ```bash

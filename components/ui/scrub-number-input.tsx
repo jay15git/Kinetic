@@ -3,8 +3,6 @@
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
-  useMemo,
   useRef,
   useState,
   type ComponentProps,
@@ -13,6 +11,7 @@ import {
   type PointerEvent,
   type RefObject,
 } from "react"
+import { flushSync } from "react-dom"
 import { NumberField } from "@base-ui/react/number-field"
 import { Calligraph } from "calligraph"
 import {
@@ -387,26 +386,110 @@ function splitSignedDisplayValue(value: string) {
   return { body: value, sign: "" }
 }
 
-function mirrorInputTypography(source: HTMLElement): CSSProperties {
-  const computed = getComputedStyle(source)
+function getInputPaddingInline(input: HTMLInputElement) {
+  const style = getComputedStyle(input)
+  return (
+    parseFloat(style.paddingLeft) + parseFloat(style.borderLeftWidth || "0")
+  )
+}
 
-  return {
-    fontFamily: computed.fontFamily,
-    fontFeatureSettings: computed.fontFeatureSettings,
-    fontSize: computed.fontSize,
-    fontStyle: computed.fontStyle,
-    fontVariantNumeric: computed.fontVariantNumeric as CSSProperties["fontVariantNumeric"],
-    fontWeight: computed.fontWeight,
-    letterSpacing: computed.letterSpacing,
-    lineHeight: computed.lineHeight,
+function placeInputCaretAtPoint(
+  input: HTMLInputElement,
+  clientX: number,
+  clientY: number,
+) {
+  input.focus({ preventScroll: true })
+
+  const text = input.value
+
+  if (!text.length) {
+    input.setSelectionRange(0, 0)
+    return
+  }
+
+  try {
+    const doc = input.ownerDocument
+
+    if (typeof doc.caretRangeFromPoint === "function") {
+      const range = doc.caretRangeFromPoint(clientX, clientY)
+
+      if (range?.startContainer === input) {
+        const offset = Math.max(0, Math.min(text.length, range.startOffset))
+        input.setSelectionRange(offset, offset)
+        return
+      }
+    }
+
+    if (typeof doc.caretPositionFromPoint === "function") {
+      const position = doc.caretPositionFromPoint(clientX, clientY)
+
+      if (position?.offsetNode === input) {
+        const offset = Math.max(0, Math.min(text.length, position.offset))
+        input.setSelectionRange(offset, offset)
+        return
+      }
+    }
+  } catch {
+    // Fall through to width-based placement.
+  }
+
+  const rect = input.getBoundingClientRect()
+  const style = getComputedStyle(input)
+  const canvas = input.ownerDocument.createElement("canvas")
+  const context = canvas.getContext("2d")
+
+  if (!context) {
+    input.setSelectionRange(text.length, text.length)
+    return
+  }
+
+  context.font = `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+  const relativeX = Math.max(0, clientX - rect.left - getInputPaddingInline(input))
+
+  let offset = text.length
+
+  for (let index = 0; index <= text.length; index++) {
+    const width = context.measureText(text.slice(0, index)).width
+
+    if (width >= relativeX) {
+      offset = index
+      break
+    }
+  }
+
+  try {
+    input.setSelectionRange(offset, offset)
+  } catch {
+    input.setSelectionRange(text.length, text.length)
   }
 }
 
-function mirrorCalligraphTypography(source: HTMLElement): CSSProperties {
-  return {
-    ...mirrorInputTypography(source),
-    lineHeight: 1,
+function focusInputForEdit(
+  input: HTMLInputElement,
+  pointerPoint?: EditPointerPoint,
+) {
+  input.focus({ preventScroll: true })
+
+  try {
+    if (pointerPoint) {
+      placeInputCaretAtPoint(
+        input,
+        pointerPoint.clientX,
+        pointerPoint.clientY,
+      )
+      return
+    }
+
+    const length = input.value.length
+    input.setSelectionRange(length, length)
+  } catch {
+    // jsdom can throw if focus/selection is not ready yet.
   }
+}
+
+type EditPointerPoint = {
+  clientX: number
+  clientY: number
 }
 
 function CalligraphNumber({
@@ -480,26 +563,11 @@ function getFieldClasses(inputClassName?: string, extra?: string) {
   )
 }
 
-function focusInputForEdit(
-  input: HTMLInputElement,
-  selectOnEdit: boolean,
-) {
-  input.focus({ preventScroll: true })
-
-  if (selectOnEdit) {
-    input.select()
-  } else {
-    const length = input.value.length
-    input.setSelectionRange(length, length)
-  }
-}
-
 type ScrubFieldBodyProps = {
   calligraph: CalligraphSettings
   direction: "horizontal" | "vertical"
   pixelSensitivity: number
   boundFeedback: BoundFeedbackMode
-  defaultResetValue?: number
   disabled?: boolean
   displayValue: string
   editing: boolean
@@ -513,7 +581,8 @@ type ScrubFieldBodyProps = {
   numericValue: number
   onBoundFeedback: (edge: "min" | "max", source: BoundFeedbackSource) => void
   onEditingChange: (editing: boolean) => void
-  onReset: (clientX: number, clientY: number) => boolean
+  onDoubleClickReset: () => void
+  resetOnDoubleClick: boolean
   scrubbing: boolean
   inputProps?: Omit<ComponentProps<"input">, "onChange" | "type" | "value" | "size">
   inputRef: RefObject<HTMLInputElement | null>
@@ -524,7 +593,6 @@ function ScrubFieldBody({
   direction,
   pixelSensitivity,
   boundFeedback,
-  defaultResetValue,
   disabled,
   displayValue,
   editing,
@@ -538,74 +606,44 @@ function ScrubFieldBody({
   numericValue,
   onBoundFeedback,
   onEditingChange,
-  onReset,
+  onDoubleClickReset,
+  resetOnDoubleClick,
   scrubbing,
   inputProps,
   inputRef,
 }: ScrubFieldBodyProps) {
+  const fieldChromeClass = getFieldClasses()
   const fieldClass = getFieldClasses(inputClassName)
   const calligraphClipRef = useRef<HTMLDivElement>(null)
   const calligraphContentRef = useRef<HTMLSpanElement>(null)
-  const [mirroredTypography, setMirroredTypography] = useState<CSSProperties>({})
-  const prevTypographyRef = useRef("")
-  const lastClickRef = useRef<{ time: number; x: number; y: number } | null>(null)
   const boundLatchedRef = useRef({ min: false, max: false })
-  const editTimerRef = useRef<number | null>(null)
+  const scrubGestureRef = useRef<{
+    active: boolean
+    moved: boolean
+    delta: number
+    clientX: number
+    clientY: number
+  }>({ active: false, moved: false, delta: 0, clientX: 0, clientY: 0 })
+  const [scrubHolding, setScrubHolding] = useState(false)
+  const pendingSelectAllRef = useRef(false)
 
   const logoScrollEnabled = logo.enabled
   const usesInputGroup = logoScrollEnabled
   const usesGroupedControl = grouped || logoScrollEnabled
   const atBound = getAtBound(numericValue, min, max)
   const scrubBounds = { min, max }
+  const showNativeInput = editing && !scrubHolding
+  const showDisplaySurface = !showNativeInput
+  const displayContentClass = cn(
+    "h-full w-full px-2 py-1 text-start text-[0.8rem] leading-none tabular-nums",
+    inputClassName,
+  )
 
   const isDisplayTruncated = useDisplayOverflowTruncated(
     calligraphClipRef,
-    [displayValue, mirroredTypography, editing, nudgeTrend],
-    inputRef,
+    [displayValue, inputClassName, showNativeInput, nudgeTrend],
+    calligraphContentRef,
   )
-
-  useLayoutEffect(() => {
-    const syncMirroredTypography = () => {
-      const source = inputRef.current
-
-      if (!source) {
-        return
-      }
-
-      const nextTypography = mirrorCalligraphTypography(source)
-      const nextKey = JSON.stringify(nextTypography)
-
-      if (nextKey === prevTypographyRef.current) {
-        return
-      }
-
-      prevTypographyRef.current = nextKey
-      setMirroredTypography(nextTypography)
-    }
-
-    syncMirroredTypography()
-
-    const source = inputRef.current
-
-    if (!source || typeof ResizeObserver === "undefined") {
-      return
-    }
-
-    const observer = new ResizeObserver(syncMirroredTypography)
-    observer.observe(source)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [displayValue, editing])
-
-  useEffect(() => {
-    return () => {
-      if (editTimerRef.current != null) {
-        window.clearTimeout(editTimerRef.current)
-      }
-    }
-  }, [])
 
   useEffect(() => {
     if (min != null && numericValue > min) {
@@ -641,48 +679,137 @@ function ScrubFieldBody({
     }
   }, [boundFeedback, numericValue, max, min, onBoundFeedback, scrubbing])
 
-  const enterEditMode = useCallback(() => {
-    if (disabled) {
-      return
-    }
-
-    onEditingChange(true)
-
-    requestAnimationFrame(() => {
-      const input = inputRef.current
-
-      if (input) {
-        focusInputForEdit(input, inputSettings.selectOnEdit)
-      }
-    })
-  }, [disabled, inputSettings.selectOnEdit, onEditingChange])
-
-  const handleDisplayClick = useCallback(
-    (event: PointerEvent<HTMLDivElement>) => {
+  const enterEditMode = useCallback(
+    (pointerPoint?: EditPointerPoint) => {
       if (disabled) {
         return
       }
 
-      if (onReset(event.clientX, event.clientY)) {
-        if (editTimerRef.current != null) {
-          window.clearTimeout(editTimerRef.current)
-          editTimerRef.current = null
+      setScrubHolding(false)
+      scrubGestureRef.current = {
+        active: false,
+        moved: false,
+        delta: 0,
+        clientX: 0,
+        clientY: 0,
+      }
+      pendingSelectAllRef.current = inputSettings.selectOnEdit
+
+      flushSync(() => {
+        onEditingChange(true)
+      })
+
+      requestAnimationFrame(() => {
+        const input = inputRef.current
+
+        if (!input) {
+          return
         }
-        event.preventDefault()
-        event.stopPropagation()
+
+        if (inputSettings.selectOnEdit) {
+          input.focus({ preventScroll: true })
+          requestAnimationFrame(() => {
+            try {
+              input.select()
+            } catch {
+              // jsdom can throw if focus/selection is not ready yet.
+            }
+          })
+          return
+        }
+
+        focusInputForEdit(input, pointerPoint)
+      })
+    },
+    [disabled, inputSettings.selectOnEdit, onEditingChange, inputRef],
+  )
+
+  const scheduleEditMode = useCallback(
+    (pointerPoint?: EditPointerPoint) => enterEditMode(pointerPoint),
+    [enterEditMode],
+  )
+
+  const handleScrubGestureDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      scrubGestureRef.current = {
+        active: true,
+        moved: false,
+        delta: 0,
+        clientX: event.clientX,
+        clientY: event.clientY,
+      }
+      setScrubHolding(true)
+    },
+    [],
+  )
+
+  const finishScrubGesture = useCallback(
+    () => {
+      const gesture = scrubGestureRef.current
+
+      if (!gesture.active) {
         return
       }
 
-      if (editTimerRef.current != null) {
-        window.clearTimeout(editTimerRef.current)
+      const pointerPoint = {
+        clientX: gesture.clientX,
+        clientY: gesture.clientY,
       }
 
-      editTimerRef.current = window.setTimeout(() => {
-        editTimerRef.current = null
-        enterEditMode()
-      }, 250)
+      scrubGestureRef.current = {
+        active: false,
+        moved: false,
+        delta: 0,
+        clientX: 0,
+        clientY: 0,
+      }
+      setScrubHolding(false)
+
+      if (disabled) {
+        return
+      }
+
+      if (gesture.moved) {
+        onEditingChange(false)
+        inputRef.current?.blur()
+        return
+      }
+
+      scheduleEditMode(pointerPoint)
     },
-    [disabled, enterEditMode, onReset],
+    [disabled, inputRef, onEditingChange, scheduleEditMode],
+  )
+
+  const handleDisplayClick = useCallback(() => {
+    if (logoScrollEnabled) {
+      scheduleEditMode()
+      return
+    }
+
+    finishScrubGesture()
+  }, [finishScrubGesture, logoScrollEnabled, scheduleEditMode])
+
+  const handleDisplayDoubleClick = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (disabled || !resetOnDoubleClick) {
+        return
+      }
+
+      event.preventDefault()
+
+      scrubGestureRef.current = {
+        active: false,
+        moved: false,
+        delta: 0,
+        clientX: 0,
+        clientY: 0,
+      }
+      setScrubHolding(false)
+      onEditingChange(false)
+      inputRef.current?.blur()
+      onDoubleClickReset()
+    },
+    [disabled, inputRef, onDoubleClickReset, onEditingChange, resetOnDoubleClick],
   )
 
   const handleDisplayKeyDown = useCallback(
@@ -693,26 +820,108 @@ function ScrubFieldBody({
 
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault()
-        enterEditMode()
+        scheduleEditMode()
       }
     },
-    [disabled, enterEditMode],
+    [disabled, scheduleEditMode],
   )
 
-  const groupControlClass =
-    "relative z-[1] flex min-w-0 w-full flex-1 items-center justify-start overflow-hidden rounded-none border-0 bg-transparent text-foreground shadow-none dark:bg-transparent"
+  // Track scrub movement on window (pointer lock) and finalize on pointerup.
+  useEffect(() => {
+    if (logoScrollEnabled) {
+      return
+    }
+
+    const handleWindowPointerMove = (event: globalThis.PointerEvent) => {
+      const gesture = scrubGestureRef.current
+
+      if (!gesture.active || gesture.moved) {
+        return
+      }
+
+      const axisDelta =
+        direction === "vertical" ? event.movementY : event.movementX
+      gesture.delta += axisDelta
+
+      if (Math.abs(gesture.delta) >= pixelSensitivity) {
+        gesture.moved = true
+      }
+    }
+
+    const handleWindowPointerUp = () => {
+      queueMicrotask(() => {
+        finishScrubGesture()
+      })
+    }
+
+    window.addEventListener("pointermove", handleWindowPointerMove, true)
+    window.addEventListener("pointerup", handleWindowPointerUp, true)
+
+    return () => {
+      window.removeEventListener("pointermove", handleWindowPointerMove, true)
+      window.removeEventListener("pointerup", handleWindowPointerUp, true)
+    }
+  }, [direction, finishScrubGesture, logoScrollEnabled, pixelSensitivity])
 
   const calligraphLayoutKey = usesGroupedControl ? "group" : "field"
 
-  const hiddenInputClass = cn(
+  const fieldShellClass = cn(
+    usesGroupedControl
+      ? "relative flex min-w-0 flex-1 overflow-hidden"
+      : cn(
+          fieldChromeClass,
+          "scrub-bound-field relative isolate shrink-0 w-full px-0 py-0 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50",
+        ),
+  )
+
+  const nativeInputClass = cn(
     fieldClass,
     usesGroupedControl
       ? "w-full rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0 dark:bg-transparent"
-      : "relative z-[1] scrub-bound-field",
-    "text-start",
-    editing
-      ? "relative z-[2]"
-      : "pointer-events-none absolute inset-0 z-0 opacity-0",
+      : "scrub-bound-field border-0 bg-transparent shadow-none focus-visible:ring-0",
+    "absolute inset-0 z-[1] text-start leading-none",
+    showNativeInput
+      ? "cursor-text caret-current text-foreground"
+      : "pointer-events-none opacity-0",
+  )
+
+  const displayOverlayShellClass = cn(
+    "absolute inset-0 z-[2] flex min-w-0 items-center justify-start overflow-hidden text-foreground",
+    !logoScrollEnabled && getScrubCursorClass(direction, atBound, scrubBounds),
+    !logoScrollEnabled && "select-none",
+    logoScrollEnabled && "cursor-text",
+    disabled && "cursor-not-allowed opacity-50",
+  )
+
+  const calligraphOverlay = (
+    <div
+      className={cn(
+        displayOverlayShellClass,
+        showDisplaySurface
+          ? "opacity-100"
+          : "pointer-events-none opacity-0",
+      )}
+      data-slot="scrub-number-display-overlay"
+    >
+      <motion.div
+        {...(grouped ? {} : { layoutRoot: true })}
+        ref={calligraphClipRef}
+        className={cn(
+          "pointer-events-none relative flex min-w-0 items-center justify-start overflow-hidden",
+          displayContentClass,
+        )}
+        data-slot="scrub-number-calligraph-value"
+        style={{ height: "100%", minHeight: 0 }}
+      >
+        <CalligraphNumber
+          contentRef={calligraphContentRef}
+          layoutKey={calligraphLayoutKey}
+          settings={calligraph}
+          trend={nudgeTrend}
+          value={displayValue}
+        />
+      </motion.div>
+    </div>
   )
 
   const displayLayer = (
@@ -722,46 +931,24 @@ function ScrubFieldBody({
       aria-valuemin={min}
       aria-valuenow={numericValue}
       aria-valuetext={isDisplayTruncated ? displayValue : undefined}
+      aria-hidden={!showDisplaySurface}
       className={cn(
-        fieldClass,
-        usesGroupedControl
-          ? groupControlClass
-          : "relative z-[1] flex items-center justify-start text-foreground scrub-bound-field",
-        !logoScrollEnabled &&
-          getScrubCursorClass(direction, atBound, scrubBounds),
-        !logoScrollEnabled && "select-none",
-        logoScrollEnabled && "cursor-text",
-        disabled && "cursor-not-allowed opacity-50",
+        "relative z-[3] flex min-w-0 flex-1 items-stretch",
+        !showDisplaySurface && "pointer-events-none",
       )}
       data-slot={usesGroupedControl ? "input-group-control" : "scrub-number-scrubbable"}
       role="spinbutton"
-      tabIndex={disabled ? -1 : 0}
+      tabIndex={disabled || !showDisplaySurface ? -1 : 0}
       title={isDisplayTruncated ? displayValue : undefined}
       onFocus={() => {
-        if (!disabled && !editing) {
-          inputRef.current?.focus({ preventScroll: true })
+        if (!disabled && !editing && !scrubHolding) {
+          scheduleEditMode()
         }
       }}
       onClick={logoScrollEnabled ? handleDisplayClick : undefined}
+      onDoubleClick={handleDisplayDoubleClick}
       onKeyDown={handleDisplayKeyDown}
-    >
-      <motion.div
-        {...(grouped ? {} : { layoutRoot: true })}
-        ref={calligraphClipRef}
-        className="pointer-events-none relative flex w-full min-w-0 items-center justify-start overflow-hidden text-foreground"
-        data-slot="scrub-number-calligraph-value"
-        style={mirroredTypography}
-      >
-        <CalligraphNumber
-          contentRef={calligraphContentRef}
-          layoutKey={calligraphLayoutKey}
-          settings={calligraph}
-          style={mirroredTypography}
-          trend={nudgeTrend}
-          value={displayValue}
-        />
-      </motion.div>
-    </div>
+    />
   )
 
   const scrubWrappedDisplay = logoScrollEnabled ? (
@@ -769,9 +956,10 @@ function ScrubFieldBody({
   ) : (
     <NumberField.ScrubArea
       className={cn(
-        "relative flex min-w-0 flex-1 items-stretch",
+        "absolute inset-0 z-[2] flex min-w-0 items-stretch",
         getScrubCursorClass(direction, atBound, scrubBounds),
         "select-none",
+        !showDisplaySurface && "pointer-events-none",
       )}
       direction={direction}
       pixelSensitivity={pixelSensitivity}
@@ -780,7 +968,9 @@ function ScrubFieldBody({
       <div
         className="relative flex min-w-0 flex-1"
         onClick={handleDisplayClick}
+        onDoubleClick={handleDisplayDoubleClick}
         onKeyDown={handleDisplayKeyDown}
+        onPointerDown={handleScrubGestureDown}
       >
         {displayLayer}
       </div>
@@ -789,22 +979,79 @@ function ScrubFieldBody({
 
   const fieldContent = (
     <div
-      className={cn(
-        "relative",
-        usesGroupedControl ? "flex min-w-0 flex-1 overflow-hidden" : "shrink-0",
-      )}
+      className={fieldShellClass}
     >
-      {!editing ? scrubWrappedDisplay : null}
       <NumberField.Input
         {...inputProps}
-        className={hiddenInputClass}
+        aria-hidden={!showNativeInput}
+        className={nativeInputClass}
+        data-editing={showNativeInput ? "" : undefined}
         disabled={disabled}
         data-slot={usesGroupedControl ? "input-group-control" : undefined}
+        tabIndex={showNativeInput ? undefined : -1}
         onBlur={() => {
+          scrubGestureRef.current = {
+            active: false,
+            moved: false,
+            delta: 0,
+            clientX: 0,
+            clientY: 0,
+          }
+          setScrubHolding(false)
           onEditingChange(false)
         }}
-        style={editing ? undefined : { caretColor: "transparent" }}
+        onFocus={(event) => {
+          if (disabled) {
+            return
+          }
+
+          if (scrubGestureRef.current.active || scrubHolding) {
+            return
+          }
+
+          onEditingChange(true)
+
+          if (!pendingSelectAllRef.current) {
+            return
+          }
+
+          pendingSelectAllRef.current = false
+          const input = event.currentTarget
+
+          queueMicrotask(() => {
+            try {
+              input.select()
+            } catch {
+              // jsdom can throw if focus/selection is not ready yet.
+            }
+          })
+        }}
+        onDoubleClick={
+          resetOnDoubleClick
+            ? (event) => {
+                event.preventDefault()
+                scrubGestureRef.current = {
+                  active: false,
+                  moved: false,
+                  delta: 0,
+                  clientX: 0,
+                  clientY: 0,
+                }
+                setScrubHolding(false)
+                onEditingChange(false)
+                event.currentTarget.blur()
+                onDoubleClickReset()
+              }
+            : undefined
+        }
+        style={{
+          caretColor: showNativeInput ? "currentColor" : "transparent",
+          height: "100%",
+          minHeight: 0,
+        }}
       />
+      {calligraphOverlay}
+      {scrubWrappedDisplay}
     </div>
   )
 
@@ -912,7 +1159,7 @@ export function ScrubNumberField({
   const [nudgeTrend, setNudgeTrend] = useState<1 | -1 | 0>(0)
   const boundFeedbackTickRef = useRef(0)
   const prevValueRef = useRef(value)
-  const lastClickRef = useRef<{ time: number; x: number; y: number } | null>(null)
+  const scrubbingRef = useRef(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const displayValue = formatFieldValue(value, format)
@@ -949,6 +1196,7 @@ export function ScrubNumberField({
       ) {
         if (reason === "scrub") {
           setScrubbing(true)
+          scrubbingRef.current = true
         }
 
         const source: BoundFeedbackSource =
@@ -983,45 +1231,38 @@ export function ScrubNumberField({
 
       if (eventDetails.reason === "scrub") {
         setScrubbing(false)
+
+        if (!editing && scrubbingRef.current) {
+          inputRef.current?.blur()
+        }
+
+        scrubbingRef.current = false
       }
     },
-    [onValueCommitted],
+    [editing, onValueCommitted],
   )
 
-  const handleResetGesture = useCallback(
-    (clientX: number, clientY: number) => {
-      const resetValue = defaultResetValue ?? defaultValue
+  const resetOnDoubleClick = defaultResetValue != null
 
-      if (resetValue == null) {
-        return false
-      }
+  const handleDoubleClickReset = useCallback(() => {
+    const resetValue = defaultResetValue ?? defaultValue
 
-      const now = Date.now()
-      const lastClick = lastClickRef.current
+    if (resetValue == null) {
+      return
+    }
 
-      if (
-        lastClick &&
-        now - lastClick.time < 300 &&
-        Math.hypot(clientX - lastClick.x, clientY - lastClick.y) < 5
-      ) {
-        lastClickRef.current = null
-        const bounded = clampNumber(resetValue, min, max)
-        prevValueRef.current = bounded
-        setValue(bounded)
-        onValueCommitted?.(bounded)
-        return true
-      }
-
-      lastClickRef.current = {
-        time: now,
-        x: clientX,
-        y: clientY,
-      }
-
-      return false
-    },
-    [defaultResetValue, defaultValue, max, min, onValueCommitted, setValue],
-  )
+    const bounded = clampNumber(resetValue, min, max)
+    prevValueRef.current = bounded
+    setValue(bounded)
+    onValueCommitted?.(bounded)
+  }, [
+    defaultResetValue,
+    defaultValue,
+    max,
+    min,
+    onValueCommitted,
+    setValue,
+  ])
 
   const field = (
     <NumberField.Root
@@ -1066,7 +1307,8 @@ export function ScrubNumberField({
           numericValue={value}
           onBoundFeedback={triggerBoundFeedback}
           onEditingChange={setEditing}
-          onReset={handleResetGesture}
+          onDoubleClickReset={handleDoubleClickReset}
+          resetOnDoubleClick={resetOnDoubleClick}
           pixelSensitivity={pixelSensitivity}
           scrubbing={scrubbing}
         />

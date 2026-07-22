@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { useState, type ComponentProps } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -6,12 +6,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { ScrubNumberField } from "@/components/ui/scrub-number-input"
 import "./scrub-number-input.css"
 
-function ControlledField(
-  props: Omit<ComponentProps<typeof ScrubNumberField>, "value" | "onValueChange"> & {
-    initialValue?: number
-  },
-) {
-  const [value, setValue] = useState(props.initialValue ?? 10)
+function ControlledField({
+  initialValue,
+  ...props
+}: Omit<ComponentProps<typeof ScrubNumberField>, "value" | "onValueChange"> & {
+  initialValue?: number
+}) {
+  const [value, setValue] = useState(initialValue ?? 10)
 
   return (
     <div>
@@ -71,6 +72,9 @@ describe("ScrubNumberField", () => {
       vi.fn().mockResolvedValue(undefined),
     )
     vi.stubGlobal("exitPointerLock", vi.fn())
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+      measureText: (text: string) => ({ width: text.length * 8 }),
+    } as CanvasRenderingContext2D)
   })
 
   afterEach(() => {
@@ -78,16 +82,136 @@ describe("ScrubNumberField", () => {
     vi.unstubAllGlobals()
   })
 
-  it("enters edit mode on click without crossing scrub threshold", async () => {
-    const user = userEvent.setup()
+  it("enters edit mode on pointer tap without crossing scrub threshold", async () => {
     render(
       <ControlledField aria-label="Value" initialValue={10} />,
     )
 
     const display = screen.getByRole("spinbutton", { name: "Value" })
+
+    await act(async () => {
+      pointerSequence(display, [
+        { type: "pointerdown", clientX: 10, clientY: 10 },
+        { type: "pointerup", clientX: 10, clientY: 10 },
+      ])
+    })
+
+    const input = screen.getByRole("textbox", { name: "Value" })
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("data-editing", "")
+      expect(document.activeElement).toBe(input)
+    })
+  })
+
+  it("applies inputClassName to the mirror source while idle", () => {
+    render(
+      <ControlledField
+        aria-label="Value"
+        initialValue={10}
+        inputClassName="landing-demo-input"
+      />,
+    )
+
+    const input = document.querySelector<HTMLInputElement>(
+      'input[aria-label="Value"]',
+    ) as HTMLInputElement
+
+    expect(input).toHaveClass("landing-demo-input")
+    expect(input).toHaveClass("opacity-0")
+  })
+
+  it("keeps Calligraph mounted while exposing one accessible surface", async () => {
+    const user = userEvent.setup()
+    render(<ControlledField aria-label="Value" initialValue={10} />)
+
+    const display = screen.getByRole("spinbutton", { name: "Value" })
+    const overlay = document.querySelector(
+      '[data-slot="scrub-number-display-overlay"]',
+    )
+    const input = document.querySelector<HTMLInputElement>(
+      'input[aria-label="Value"]',
+    ) as HTMLInputElement
+
+    expect(overlay).toBeInTheDocument()
+    expect(input).toHaveClass("opacity-0")
+    expect(screen.queryByRole("textbox", { name: "Value" })).not.toBeInTheDocument()
+
     await user.click(display)
 
-    expect(screen.getByRole("textbox", { name: "Value" })).toBeInTheDocument()
+    await waitFor(() => {
+      expect(overlay).toBeInTheDocument()
+      expect(input).not.toHaveClass("opacity-0")
+      expect(screen.queryByRole("spinbutton", { name: "Value" })).not.toBeInTheDocument()
+    })
+  })
+
+  it("shows a caret-ready input at pointer position when select all is disabled", async () => {
+    const user = userEvent.setup()
+    render(
+      <ControlledField
+        aria-label="Value"
+        initialValue={10}
+        inputSettings={{ selectOnEdit: false }}
+      />,
+    )
+
+    const display = screen.getByRole("spinbutton", { name: "Value" })
+    await user.click(display)
+
+    const input = screen.getByRole("textbox", { name: "Value" }) as HTMLInputElement
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("data-editing", "")
+      expect(input).toHaveClass("caret-current")
+      expect(document.activeElement).toBe(input)
+      expect(input.selectionStart).toBe(input.selectionEnd)
+    })
+  })
+
+  it("selects all only when entering edit from keyboard with selectOnEdit enabled", async () => {
+    const user = userEvent.setup()
+
+    render(
+      <ControlledField
+        aria-label="Value"
+        initialValue={10}
+        inputSettings={{ selectOnEdit: true }}
+      />,
+    )
+
+    const display = screen.getByRole("spinbutton", { name: "Value" })
+    display.focus()
+    await user.keyboard("{Enter}")
+
+    const input = screen.getByRole("textbox", { name: "Value" }) as HTMLInputElement
+
+    await waitFor(() => {
+      expect(input.selectionStart).toBe(0)
+      expect(input.selectionEnd).toBe(input.value.length)
+    })
+  })
+
+  it("selects all on pointer click when selectOnEdit is enabled", async () => {
+    const user = userEvent.setup()
+
+    render(
+      <ControlledField
+        aria-label="Value"
+        initialValue={10}
+        inputSettings={{ selectOnEdit: true }}
+      />,
+    )
+
+    const display = screen.getByRole("spinbutton", { name: "Value" })
+    await user.click(display)
+
+    const input = screen.getByRole("textbox", { name: "Value" }) as HTMLInputElement
+
+    await waitFor(() => {
+      expect(input.selectionStart).toBe(0)
+      expect(input.selectionEnd).toBe(input.value.length)
+    })
   })
 
   it("scrubs without entering edit and commits on pointer up", async () => {
@@ -112,24 +236,53 @@ describe("ScrubNumberField", () => {
     })
 
     expect(screen.getByRole("spinbutton", { name: "Value" })).toBeInTheDocument()
-    const input = screen.getByRole("textbox", { name: "Value" })
-    expect(input).toHaveClass("opacity-0")
+    const input = document.querySelector<HTMLInputElement>(
+      'input[aria-label="Value"]',
+    ) as HTMLInputElement
+    expect(input).not.toHaveAttribute("data-editing")
     expect(onValueCommitted).toHaveBeenCalled()
   })
 
-  it("nudges with arrow keys when focused", async () => {
+  it("nudges with arrow keys without swapping visible number surfaces", async () => {
     const user = userEvent.setup()
 
     render(<ControlledField aria-label="Value" initialValue={10} />)
 
+    await user.click(screen.getByRole("spinbutton", { name: "Value" }))
     const input = screen.getByRole("textbox", { name: "Value" })
-    await user.click(input)
+    const overlay = document.querySelector(
+      '[data-slot="scrub-number-display-overlay"]',
+    )
     await user.keyboard("{ArrowUp}")
 
-    expect(screen.getByRole("spinbutton", { name: "Value" })).toHaveAttribute(
-      "aria-valuenow",
-      "11",
+    await waitFor(() => {
+      expect(overlay).toHaveClass("opacity-0")
+      expect(document.activeElement).toBe(input)
+      expect(input).toHaveValue("11")
+      expect(input).toHaveAttribute("data-editing", "")
+    })
+  })
+
+  it("preserves native left and right caret movement in edit mode", async () => {
+    const user = userEvent.setup()
+
+    render(
+      <ControlledField
+        aria-label="Value"
+        initialValue={123}
+        inputSettings={{ selectOnEdit: false }}
+      />,
     )
+
+    await user.click(screen.getByRole("spinbutton", { name: "Value" }))
+    const input = screen.getByRole("textbox", { name: "Value" }) as HTMLInputElement
+    input.setSelectionRange(1, 1)
+
+    await user.keyboard("{ArrowRight}")
+    expect(input.selectionStart).toBe(2)
+
+    await user.keyboard("{ArrowLeft}")
+    expect(input.selectionStart).toBe(1)
   })
 
   it("resets to defaultResetValue on double click", async () => {
@@ -147,13 +300,13 @@ describe("ScrubNumberField", () => {
 
     const display = screen.getByRole("spinbutton", { name: "Value" })
 
-    await user.click(display)
-    await user.click(display)
+    await user.dblClick(display)
 
-    expect(screen.getByRole("spinbutton", { name: "Value" })).toHaveAttribute(
-      "aria-valuenow",
-      "0",
-    )
+    await waitFor(() => {
+      expect(
+        screen.getByRole("spinbutton", { name: "Value" }),
+      ).toHaveAttribute("aria-valuenow", "0")
+    })
     expect(onValueCommitted).toHaveBeenCalledWith(0)
   })
 

@@ -144,8 +144,9 @@ export const LOGO_SETTINGS_ROWS: ApiReferenceRow[] = [
 
 export const SCRUB_GESTURES: ApiGestureRow[] = [
   { action: "Drag field / handle", result: "Scrub by step (pointer-lock gesture)" },
-  { action: "Alt + drag / Up/Down / wheel", result: "smallStep" },
-  { action: "Shift + drag / Up/Down / wheel", result: "largeStep" },
+  { action: "Up/Down arrows", result: "Nudge by step" },
+  { action: "Alt + drag / Alt + Up/Down / wheel", result: "smallStep" },
+  { action: "Shift + drag / Shift + Up/Down / wheel", result: "largeStep" },
   { action: "Wheel (allowWheelScrub)", result: "Step while focused" },
   { action: "Click field", result: "Enter edit mode" },
   { action: "Home / End", result: "Jump to min / max" },
@@ -164,8 +165,8 @@ export const HOW_IT_WORKS_GESTURES: ApiGestureRow[] = [
     result: "Edit mode shows the full value, not the clipped display.",
   },
   {
-    action: "Arrow keys",
-    result: "Nudge by step. Alt and Shift change step size.",
+    action: "Up/Down arrows",
+    result: "Nudge by step. Alt for fine steps, Shift for coarse.",
   },
   { action: "Home / End", result: "Jump to min or max" },
   { action: "Enter / Escape", result: "Commit or revert edit" },

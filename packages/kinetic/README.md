@@ -37,9 +37,9 @@ The registry item also installs:
 
 | Action | Shortcut |
 |--------|----------|
-| Nudge value | Arrow keys |
-| Fine step | Alt + arrows |
-| Coarse step | Shift + arrows |
+| Nudge value | Up/Down arrows |
+| Fine step | Alt + Up/Down arrows |
+| Coarse step | Shift + Up/Down arrows |
 | Jump to min/max | Home / End |
 | Edit value | Click field or Enter / Space on focus |
 | Cancel edit | Escape |

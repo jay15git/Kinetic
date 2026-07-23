@@ -503,7 +503,7 @@ export function ScrubSettingsPanel({
         </SettingsField>
       </SettingsSection>
 
-      <SettingsSection title="Keyboard nudge">
+      <SettingsSection title="Up/Down arrow nudge">
         <SettingsField label="Step">
           <SettingsScrubNumberField
             aria-label="Step"

@@ -15,7 +15,7 @@ export default function Home() {
           <p className="landing-component-name">Scrub Number Input</p>
           <p className="landing-tagline">
             Drag-to-scrub number input with animated digits. Click to edit,
-            arrow keys to nudge.
+            Up/Down arrow keys to nudge.
           </p>
           <LandingMit />
         </div>

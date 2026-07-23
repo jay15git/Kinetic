@@ -3,7 +3,7 @@
   "name": "scrub-number-field",
   "title": "Scrub Number Field",
   "author": "jay15git",
-  "description": "Scrub number input with drag-to-scrub, click-to-edit, Calligraph digit animation, keyboard and wheel nudging.",
+  "description": "Scrub number input with drag-to-scrub, click-to-edit, Calligraph digit animation, Up/Down arrow nudging, and wheel nudging.",
   "dependencies": [
     "calligraph",
     "lucide-react",

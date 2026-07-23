@@ -148,8 +148,9 @@ Fields stay a fixed width so digit animation does not shift layout. When a value
 | Action | Result |
 |--------|--------|
 | Drag field / handle | Scrub by `step` |
-| Alt + drag / arrows / wheel | `smallStep` |
-| Shift + drag / arrows / wheel | `largeStep` |
+| Up/Down arrows | Nudge by `step` |
+| Alt + drag / Alt + Up/Down / wheel | `smallStep` |
+| Shift + drag / Shift + Up/Down / wheel | `largeStep` |
 | Wheel (`allowWheelScrub`) | Step while focused |
 | Click field | Enter edit mode |
 | Home / End | Jump to min / max |
@@ -157,7 +158,7 @@ Fields stay a fixed width so digit animation does not shift layout. When a value
 | Enter | Commit edit |
 | Escape | Revert edit |
 
-Modifier keys: Alt = fine step (`smallStep`), Shift = coarse step (`largeStep`).
+Up/Down arrows nudge by `step`. Alt = fine step (`smallStep`), Shift = coarse step (`largeStep`).
 
 ## Publishing
 

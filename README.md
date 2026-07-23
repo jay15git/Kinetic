@@ -116,7 +116,7 @@ Fields stay a fixed width so digit animation does not shift layout. When a value
 
 - **Display mode**: left-aligned; overflow clips on the right.
 - **Hover**: native `title` tooltip shows the full formatted value when truncated.
-- **Edit mode**: click always opens the full precision string — never a clipped preview.
+- **Edit mode**: click opens the full value string, not the clipped display.
 
 ## Main props (`ScrubNumberField`)
 

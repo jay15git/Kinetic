@@ -405,7 +405,7 @@
   }
 }
 
-/* Transitions.dev — icon swap (copy ↔ copied) */
+/* Transitions.dev: icon swap (copy ↔ copied) */
 .landing-icon-swap {
   --icon-swap-dur: 250ms;
   --icon-swap-blur: 2px;
@@ -446,7 +446,7 @@
   }
 }
 
-/* Transitions.dev — card resize */
+/* Transitions.dev: card resize */
 .t-resize {
   overflow: hidden;
   transition:
@@ -461,7 +461,7 @@
   }
 }
 
-/* Transitions.dev — panel reveal (settings rows) */
+/* Transitions.dev: panel reveal (settings rows) */
 .t-panel-slide {
   transform: translateY(var(--panel-translate-y));
   opacity: 0;
@@ -956,7 +956,9 @@
   background-color: #ffffff;
   opacity: 1;
   isolation: isolate;
-  box-shadow: var(--landing-shadow-card);
+  box-shadow:
+    0 1px 2px rgba(30, 42, 58, 0.04),
+    0 6px 16px rgba(30, 42, 58, 0.06);
   padding: 28px 24px;
   animation: landing-demo-card-enter var(--landing-enter-duration)
     var(--landing-enter-ease) 120ms both;

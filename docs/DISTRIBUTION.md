@@ -1,6 +1,6 @@
 # Distribution strategy
 
-Kinetic ships through the **shadcn namespace registry** — the same model as [@ncdai](https://chanhdai.com/components) and core shadcn components. Users copy source into their project via the shadcn CLI.
+Kinetic ships through the **shadcn namespace registry**, same model as [@ncdai](https://chanhdai.com/components) and core shadcn components. Users copy source into their project via the shadcn CLI.
 
 **Site:** [kinetic.itsjay.in](https://kinetic.itsjay.in)  
 **Registry JSON:** `https://kinetic.itsjay.in/r/{name}.json`
@@ -76,23 +76,23 @@ NEXT_PUBLIC_KINETIC_REGISTRY_URL=https://kinetic.itsjay.in
 
 ## Deploy checklist
 
-1. Push to [github.com/jay15git/Kinetic](https://github.com/jay15git/Kinetic) — pushes to `main` auto-deploy via GitHub Actions
-2. Vercel project: `kinetic` — production at [kinetic.itsjay.in](https://kinetic.itsjay.in)
+1. Push to [github.com/jay15git/Kinetic](https://github.com/jay15git/Kinetic). Pushes to `main` auto-deploy via GitHub Actions
+2. Vercel project: `kinetic`. Production at [kinetic.itsjay.in](https://kinetic.itsjay.in)
 3. Optional native Git hookup: [docs/VERCEL_GIT_SETUP.md](./VERCEL_GIT_SETUP.md)
-4. Custom domain `kinetic.itsjay.in` — add DNS record at your registrar:
+4. Custom domain `kinetic.itsjay.in`. Add DNS record at your registrar:
    - **Recommended:** `A kinetic.itsjay.in → 76.76.21.21`
    - Or CNAME `kinetic` → `cname.vercel-dns.com` (see Vercel domain settings)
 4. Verify after DNS propagates:
    - `https://kinetic.itsjay.in/r/registry.json`
    - `https://kinetic.itsjay.in/r/scrub-number-field.json`
-5. Submit `@kinetic` — filed at [shadcn-ui/ui#11153](https://github.com/shadcn-ui/ui/issues/11153); see also [docs/registry-directory-submission.md](./registry-directory-submission.md)
+5. Submit `@kinetic`. Filed at [shadcn-ui/ui#11153](https://github.com/shadcn-ui/ui/issues/11153); see also [docs/registry-directory-submission.md](./registry-directory-submission.md)
 
 ## Deferred (not v1)
 
 | Item | Status |
 |------|--------|
 | shadcn community registry directory | After deploy + live JSON |
-| npm package (`packages/kinetic`) | Future — registry is primary |
+| npm package (`packages/kinetic`) | Future. Registry is primary |
 
 ## Why registry?
 

@@ -17,7 +17,7 @@ import {
 import type { ScrubInstallHighlighted } from "@/lib/scrub-install-highlighted"
 import type { ScrubInstallContent } from "@/lib/scrub-install-content"
 
-/** Strong ease-out — Emil / animation audit standard for UI entrances */
+/** Strong ease-out. Emil / animation audit standard for UI entrances */
 const PANEL_EASE = [0.23, 1, 0.32, 1] as const
 const PANEL_DURATION = 0.2
 

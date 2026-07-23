@@ -14,7 +14,7 @@ Kinetic is a shadcn-registry **Scrub Number Input** for drag-to-scrub number inp
 
 ## Brand Personality
 
-Precise, tactile, quiet. A finished instrument panel—not a marketing site. Voice: mechanical confidence, show-don't-tell, zero hype.
+Precise, tactile, quiet. A finished instrument panel, not a marketing site. Voice: mechanical confidence, show-don't-tell, zero hype.
 
 ## Anti-references
 

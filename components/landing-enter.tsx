@@ -4,7 +4,7 @@ import { motion, useReducedMotion, type Variants } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
-/** Matches install tab panels — Emil-style ease-out */
+/** Matches install tab panels. Emil-style ease-out */
 const ENTER_EASE = [0.23, 1, 0.32, 1] as const
 const ENTER_DURATION = 0.32
 const STAGGER_CHILDREN = 0.07

@@ -34,7 +34,7 @@ Mark each cell pass/fail during manual QA.
 
 - [ ] Large values (`9999999`): trailing digits visible, leading digits masked from the left
 - [ ] Large values: browser tooltip (`title`) shows full formatted value on hover when truncated
-- [ ] Large values: click-to-edit reveals full value (select-all or caret), not a clipped preview
+- [ ] Large values: click-to-edit reveals full value (select-all or caret), not the clipped display
 - [ ] Small decimals (`0.001`, `step=0.1`)
 - [ ] Signed ranges (`min=-180`, `max=180`)
 - [ ] `alwaysShowSign: true` shows `+` on positives

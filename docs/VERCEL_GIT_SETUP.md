@@ -6,7 +6,7 @@
 - **Branch:** `main`
 - **Vercel project:** `kinetic` (production domain: `kinetic.itsjay.in`)
 
-## Option A — Native Git integration (recommended)
+## Option A: Native Git integration (recommended)
 
 Vercel must be allowed to access the `Kinetic` repository in the GitHub app:
 
@@ -27,7 +27,7 @@ Or in the [Vercel dashboard](https://vercel.com/jay15gits-projects/kinetic/setti
 
 Every push to `main` will trigger a production deployment.
 
-## Option B — GitHub Actions (already configured)
+## Option B: GitHub Actions (already configured)
 
 Workflow: [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml)
 

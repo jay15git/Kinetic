@@ -708,7 +708,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             </AnimatePresence>
           )}
 
-          {/* invisible radix — keyboard/ARIA only */}
+          {/* invisible radix: keyboard/ARIA only */}
           <SliderPrimitive.Root
             value={values}
             onValueChange={handleRadixChange}

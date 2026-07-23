@@ -6,7 +6,7 @@ import { ScrubDemo } from "@/components/scrub-demo"
 import "../landing.css"
 
 export const metadata: Metadata = {
-  title: "Demo — Kinetic",
+  title: "Demo: Kinetic",
   description:
     "Interactive Scrub Number Input playground. Tweak settings and copy generated usage props.",
 }

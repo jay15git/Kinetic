@@ -6,7 +6,7 @@ Full API reference: [kinetic.itsjay.in](https://kinetic.itsjay.in/?tab=api) · [
 
 ## Install
 
-### Recommended — shadcn registry
+### Recommended: shadcn registry
 
 Add to `components.json` (until `@kinetic` is in the shadcn registry directory):
 

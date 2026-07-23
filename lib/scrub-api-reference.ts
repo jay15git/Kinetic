@@ -157,15 +157,15 @@ export const SCRUB_GESTURES: ApiGestureRow[] = [
 export const HOW_IT_WORKS_GESTURES: ApiGestureRow[] = [
   {
     action: "Drag",
-    result: "Scrub by step — hold Alt (fine) or Shift (coarse) for smaller or larger steps",
+    result: "Scrub by step. Alt for fine steps, Shift for coarse.",
   },
   {
     action: "Click",
-    result: "Edit with full precision — never a clipped preview",
+    result: "Edit mode shows the full value, not the clipped display.",
   },
   {
     action: "Arrow keys",
-    result: "Nudge by step — Alt and Shift modifiers apply fine and coarse steps",
+    result: "Nudge by step. Alt and Shift change step size.",
   },
   { action: "Home / End", result: "Jump to min or max" },
   { action: "Enter / Escape", result: "Commit or revert edit" },

@@ -17,29 +17,31 @@ export function ScrubHowItWorks() {
 
   return (
     <div className="landing-features-panel">
-      <div className="landing-demo-card">
-        <div>
-          <ScrubNumberField
-            aria-label="Value"
-            className="w-full"
-            inputClassName="landing-demo-input"
-            allowWheelScrub={settings.allowWheelScrub}
-            boundFeedback={settings.boundFeedback}
-            calligraph={settings.calligraph}
-            direction={settings.direction}
-            format={settings.format}
-            inputSettings={settings.input}
-            largeStep={settings.largeStep}
-            logo={settings.logo}
-            pixelSensitivity={settings.pixelSensitivity}
-            smallStep={settings.smallStep}
-            step={settings.step ?? 1}
-            min={settings.min}
-            max={settings.max}
-            defaultResetValue={0}
-            value={value}
-            onValueChange={setValue}
-          />
+      <div className="landing-demo-sticky">
+        <div className="landing-demo-card">
+          <div>
+            <ScrubNumberField
+              aria-label="Value"
+              className="w-full"
+              inputClassName="landing-demo-input"
+              allowWheelScrub={settings.allowWheelScrub}
+              boundFeedback={settings.boundFeedback}
+              calligraph={settings.calligraph}
+              direction={settings.direction}
+              format={settings.format}
+              inputSettings={settings.input}
+              largeStep={settings.largeStep}
+              logo={settings.logo}
+              pixelSensitivity={settings.pixelSensitivity}
+              smallStep={settings.smallStep}
+              step={settings.step ?? 1}
+              min={settings.min}
+              max={settings.max}
+              defaultResetValue={0}
+              value={value}
+              onValueChange={setValue}
+            />
+          </div>
         </div>
       </div>
 

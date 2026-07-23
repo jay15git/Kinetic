@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tabs"
 import { readInitialHomeTab, type HomeTab } from "@/lib/home-tab-pending"
 
-/** Strong ease-out — Emil / animation audit standard for UI entrances */
+/** Strong ease-out. Emil / animation audit standard for UI entrances */
 const PANEL_EASE = [0.23, 1, 0.32, 1] as const
 const PANEL_DURATION = 0.2
 

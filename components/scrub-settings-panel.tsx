@@ -411,7 +411,7 @@ export function ScrubSettingsPanel({
         />
 
         <SwitchSettingsField
-          label="Logo scroll"
+          label="Logo mode"
           checked={settings.logo.enabled}
           onToggle={() => patchLogo({ enabled: !settings.logo.enabled })}
         />

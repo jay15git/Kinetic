@@ -126,7 +126,7 @@ Fields stay a fixed width so digit animation does not shift layout. When a value
 | `defaultValue` | `number` | Initial value when uncontrolled |
 | `onValueChange` | `(n: number) => void` | Fires on every change |
 | `onValueCommitted` | `(n: number) => void` | Fires on blur after edit, or when scrub ends |
-| `defaultResetValue` | `number` | Target for double-click reset |
+| `defaultResetValue` | `number` | Reset target for double-click on the logo handle (logo mode) |
 | `min` / `max` | `number` | Clamp bounds |
 | `step` | `number` | Normal increment (default `1`) |
 | `smallStep` | `number` | Fine increment while Alt held (default `0.1`) |
@@ -138,7 +138,7 @@ Fields stay a fixed width so digit animation does not shift layout. When a value
 | `boundFeedback` | `"none" \| "shake" \| "borderPulse"` | Feedback at min/max |
 | `calligraph` | `CalligraphSettings` | Digit animation variant |
 | `inputSettings` | `InputSettings` | Select-on-edit |
-| `logo` | `LogoSettings` | Handle icon scrub mode |
+| `logo` | `LogoSettings` | Logo handle scrub mode; double-click logo to reset |
 | `grouped` | `boolean` | Borderless control for use inside `InputGroup` |
 | `label` | `string` | Optional side label |
 | `disabled` | `boolean` | Disable interaction |
@@ -154,7 +154,7 @@ Fields stay a fixed width so digit animation does not shift layout. When a value
 | Wheel (`allowWheelScrub`) | Step while focused |
 | Click field | Enter edit mode |
 | Home / End | Jump to min / max |
-| Double-click | Reset to `defaultResetValue` |
+| Double-click logo handle | Reset to `defaultResetValue` (logo mode) |
 | Enter | Commit edit |
 | Escape | Revert edit |
 

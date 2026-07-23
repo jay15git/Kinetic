@@ -14,9 +14,13 @@ import "./scrub-number-input.css"
 function ScrubHarness({
   options,
 }: {
-  options: UseNumberScrubOptions & { disabled?: boolean }
+  options: UseNumberScrubOptions & {
+    disabled?: boolean
+    logo?: { enabled: boolean }
+  }
 }) {
   const scrub = useNumberScrub(options)
+  const logoEnabled = options.logo?.enabled ?? false
 
   return (
     <div ref={scrub.surfaceRef} data-testid="surface">
@@ -24,7 +28,7 @@ function ScrubHarness({
         ref={scrub.displaySurfaceRef}
         data-testid="display"
         tabIndex={options.disabled ? -1 : 0}
-        {...scrub.scrubSurfaceHandlers}
+        {...(logoEnabled ? {} : scrub.scrubSurfaceHandlers)}
         {...scrub.spinbuttonProps}
         onBlur={scrub.onDisplayBlur}
         onFocus={scrub.onDisplayFocus}
@@ -32,6 +36,9 @@ function ScrubHarness({
       >
         {scrub.displayValue}
       </div>
+      {logoEnabled ? (
+        <div data-testid="logo-handle" {...scrub.logoScrubHandlers} />
+      ) : null}
       {scrub.editing ? (
         <input data-testid="edit-input" {...scrub.inputProps} />
       ) : null}
@@ -538,7 +545,7 @@ describe("useNumberScrub", () => {
     expect(screen.getByTestId("editing")).toHaveTextContent("false")
   })
 
-  it("resets to defaultResetValue on double click", async () => {
+  it("resets to defaultResetValue when double-clicking the logo handle", async () => {
     const onChange = vi.fn()
     const onValueCommit = vi.fn()
 
@@ -548,6 +555,35 @@ describe("useNumberScrub", () => {
           value: 25,
           onChange,
           onValueCommit,
+          defaultResetValue: 0,
+          logo: { enabled: true },
+        }}
+      />,
+    )
+
+    const logoHandle = screen.getByTestId("logo-handle")
+
+    await act(async () => {
+      pointerSequence(logoHandle, [
+        { type: "pointerdown", clientX: 5, clientY: 5 },
+        { type: "pointerup", clientX: 5, clientY: 5 },
+        { type: "pointerdown", clientX: 5, clientY: 5 },
+        { type: "pointerup", clientX: 5, clientY: 5 },
+      ])
+    })
+
+    expect(onChange).toHaveBeenCalledWith(0)
+    expect(onValueCommit).toHaveBeenCalledWith(0)
+  })
+
+  it("does not reset on double-clicking the field without logo mode", async () => {
+    const onChange = vi.fn()
+
+    render(
+      <ScrubHarness
+        options={{
+          value: 25,
+          onChange,
           defaultResetValue: 0,
         }}
       />,
@@ -564,8 +600,7 @@ describe("useNumberScrub", () => {
       ])
     })
 
-    expect(onChange).toHaveBeenCalledWith(0)
-    expect(onValueCommit).toHaveBeenCalledWith(0)
+    expect(onChange).not.toHaveBeenCalled()
   })
 
   it("nudges with wheel when enabled and sensitivity is reached", async () => {

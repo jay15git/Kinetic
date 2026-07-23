@@ -28,7 +28,7 @@ Mark each cell pass/fail during manual QA.
 | Coarse modifier during drag (Shift default) | | | |
 | Touch / iOS pointer | | | |
 | Caret placement on click (`selectOnEdit: false`) | | | |
-| Double-click reset (`defaultResetValue`) | | | |
+| Double-click logo reset (`defaultResetValue`, logo mode) | | | |
 | Logo handle scrub (`logo.enabled`) | | | |
 ## Numeric edge cases
 

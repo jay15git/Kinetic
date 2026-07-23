@@ -43,7 +43,7 @@ The registry item also installs:
 | Jump to min/max | Home / End |
 | Edit value | Click field or Enter / Space on focus |
 | Cancel edit | Escape |
-| Reset to default | Double-click when `defaultResetValue` is set |
+| Reset to default | Double-click logo handle when `defaultResetValue` is set (logo mode) |
 
 ### npm (programmatic import)
 

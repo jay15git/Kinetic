@@ -26,7 +26,7 @@ export const SCRUB_NUMBER_FIELD_PROPS: ApiReferenceRow[] = [
   {
     name: "defaultResetValue",
     type: "number",
-    description: "Target for double-click reset",
+    description: "Reset target when double-clicking the logo handle (logo mode)",
   },
   { name: "min", type: "number", description: "Clamp lower bound" },
   { name: "max", type: "number", description: "Clamp upper bound" },
@@ -81,7 +81,7 @@ export const SCRUB_NUMBER_FIELD_PROPS: ApiReferenceRow[] = [
     type: "InputSettings",
     description: "Select-on-edit behavior",
   },
-  { name: "logo", type: "LogoSettings", description: "Handle icon scrub mode" },
+  { name: "logo", type: "LogoSettings", description: "Logo handle scrub mode; double-click logo to reset" },
   {
     name: "grouped",
     type: "boolean",
@@ -132,7 +132,7 @@ export const LOGO_SETTINGS_ROWS: ApiReferenceRow[] = [
     name: "logo.enabled",
     type: "boolean",
     defaultValue: "false",
-    description: "Show handle icon for scrub surface",
+    description: "Show logo handle for scrubbing; double-click to reset",
   },
   {
     name: "logo.icon",
@@ -150,7 +150,7 @@ export const SCRUB_GESTURES: ApiGestureRow[] = [
   { action: "Wheel (allowWheelScrub)", result: "Step while focused" },
   { action: "Click field", result: "Enter edit mode" },
   { action: "Home / End", result: "Jump to min / max" },
-  { action: "Double-click", result: "Reset to defaultResetValue" },
+  { action: "Double-click logo handle", result: "Reset to defaultResetValue (logo mode)" },
   { action: "Enter", result: "Commit edit" },
   { action: "Escape", result: "Revert edit" },
 ]
@@ -171,8 +171,8 @@ export const HOW_IT_WORKS_GESTURES: ApiGestureRow[] = [
   { action: "Home / End", result: "Jump to min or max" },
   { action: "Enter / Escape", result: "Commit or revert edit" },
   {
-    action: "Double-click",
-    result: "Reset to defaultResetValue when set",
+    action: "Double-click logo",
+    result: "Reset to defaultResetValue when logo mode is on",
   },
 ]
 

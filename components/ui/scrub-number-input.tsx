@@ -1387,7 +1387,7 @@ export function useNumberScrub({
       ) {
         lastClickRef.current = null
 
-        if (resetToDefault()) {
+        if (state.source === "label" && resetToDefault()) {
           event.preventDefault()
           return
         }

@@ -47,4 +47,11 @@ next-env.d.ts
 /.agents/
 /.claude/
 /.cursor/
+/.codegraph/
 /skills-lock.json
+
+# code intelligence artifacts
+codedb.snapshot
+
+# workspace package deps (installed via pnpm)
+packages/kinetic/node_modules

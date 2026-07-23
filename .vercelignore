@@ -1,0 +1,29 @@
+# Internal docs / specs (not served)
+DESIGN.md
+PRODUCT.md
+README.md
+LICENSE
+docs/
+
+# Dev / CI
+.github/
+*.test.ts
+*.test.tsx
+test/
+vitest.config.ts
+vitest.component.config.ts
+eslint.config.mjs
+scripts/registry-smoke.mjs
+
+# Code intelligence
+codedb.snapshot
+.codegraph/
+
+# npm package workspace (not used by site build)
+packages/kinetic/
+
+# Agent tooling (already gitignored locally)
+.agents/
+.claude/
+.cursor/
+.reference/

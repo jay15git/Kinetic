@@ -64,7 +64,7 @@ export const SCRUB_NUMBER_FIELD_PROPS: ApiReferenceRow[] = [
   {
     name: "format",
     type: "Intl.NumberFormatOptions",
-    description: "Display formatting (Base UI NumberField)",
+    description: "Display formatting via Intl.NumberFormat",
   },
   {
     name: "boundFeedback",
@@ -143,7 +143,7 @@ export const LOGO_SETTINGS_ROWS: ApiReferenceRow[] = [
 ]
 
 export const SCRUB_GESTURES: ApiGestureRow[] = [
-  { action: "Drag field / handle", result: "Scrub by step (Base UI ScrubArea)" },
+  { action: "Drag field / handle", result: "Scrub by step (pointer-lock gesture)" },
   { action: "Alt + drag / Up/Down / wheel", result: "smallStep" },
   { action: "Shift + drag / Up/Down / wheel", result: "largeStep" },
   { action: "Wheel (allowWheelScrub)", result: "Step while focused" },
@@ -187,6 +187,3 @@ export const API_REFERENCE_SECTIONS: ApiReferenceSection[] = [
   { id: "input", title: "Input", rows: INPUT_SETTINGS_ROWS },
   { id: "logo", title: "Logo handle", rows: LOGO_SETTINGS_ROWS },
 ]
-
-export const BASE_UI_NUMBER_FIELD_URL =
-  "https://base-ui.com/react/components/number-field"

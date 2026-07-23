@@ -23,7 +23,7 @@ vi.mock("motion/react", () => ({
       },
     }
   },
-  useReducedMotion: () => true,
+  useReducedMotion: vi.fn(() => true),
 }))
 
 vi.mock("calligraph", () => ({

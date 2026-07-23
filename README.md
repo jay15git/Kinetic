@@ -1,12 +1,12 @@
 # Kinetic
 
-Drag-to-scrub **Scrub Number Input** for React: click to type, animated digit transitions. Built on [Base UI NumberField](https://base-ui.com/react/components/number-field).
+Drag-to-scrub **Scrub Number Input** for React: click to type, animated digit transitions. Owned scrub/edit engine with Calligraph display.
 
 Full API reference: [kinetic.itsjay.in](https://kinetic.itsjay.in/?tab=api) (Features tab).
 
 ## Features
 
-- Horizontal and vertical scrub via Base UI `ScrubArea`
+- Horizontal and vertical scrub with pointer-lock gesture
 - Click-to-edit with select-all on focus
 - Keyboard: Up/Down arrows, Alt (`smallStep`), Shift (`largeStep`), Home/End
 - Optional wheel scroll and logo-handle scrub surface
@@ -43,7 +43,7 @@ pnpm dlx shadcn@latest add @kinetic/scrub-number-field
 1. **Install dependencies**
 
 ```bash
-pnpm add @base-ui/react calligraph motion lucide-react
+pnpm add calligraph motion lucide-react
 ```
 
 2. **Add shadcn components**
@@ -108,7 +108,7 @@ export function PositionField() {
 />
 ```
 
-Use `format` (`Intl.NumberFormatOptions`) for display formatting — handled by Base UI NumberField.
+Use `format` (`Intl.NumberFormatOptions`) for display formatting via `formatValue`.
 
 ### Display overflow
 
@@ -157,7 +157,7 @@ Fields stay a fixed width so digit animation does not shift layout. When a value
 | Enter | Commit edit |
 | Escape | Revert edit |
 
-Modifier keys follow Base UI NumberField conventions (Alt = fine, Shift = coarse).
+Modifier keys: Alt = fine step (`smallStep`), Shift = coarse step (`largeStep`).
 
 ## Publishing
 

@@ -1,6 +1,6 @@
 # kinetic
 
-**Scrub Number Input** for React apps using [shadcn/ui](https://ui.shadcn.com) (base-nova). Drag-to-scrub number input with animated digits, powered by [Base UI NumberField](https://base-ui.com/react/components/number-field).
+**Scrub Number Input** for React apps using [shadcn/ui](https://ui.shadcn.com) (base-nova). Drag-to-scrub number input with animated digits and owned scrub/edit engine.
 
 Full API reference: [kinetic.itsjay.in](https://kinetic.itsjay.in/?tab=api) · [Demo](https://kinetic.itsjay.in/demo)
 
@@ -30,6 +30,7 @@ The registry item also installs:
 
 - `components/ui/scrub-number-input.tsx` and `.css`
 - `lib/scrub-number-overflow.ts`
+- `lib/scrub-number-math.ts`
 - `hooks/use-controllable-state.tsx`
 
 ## Keyboard shortcuts
@@ -71,7 +72,7 @@ import { ScrubNumberField } from "kinetic"
 | Package | Required |
 |---------|----------|
 | `react`, `react-dom` | Yes |
-| `@base-ui/react`, `calligraph`, `motion`, `lucide-react` | Yes |
+| `calligraph`, `motion`, `lucide-react` | Yes |
 | shadcn `input`, `input-group` at `@/components/ui/*` | Yes (npm path) |
 
 The npm build keeps `@/components/ui/input` and `@/components/ui/input-group` as external imports. Your app must use the standard shadcn `@/*` path aliases.

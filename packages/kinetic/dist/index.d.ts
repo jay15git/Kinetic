@@ -1,8 +1,8 @@
 import * as react0 from "react";
 import { ComponentProps } from "react";
+import { CoarseModifier, FineModifier, clampNumber } from "@/lib/scrub-number-math";
 
 //#region ../../components/ui/scrub-number-input.d.ts
-declare function clampNumber(value: number, min?: number, max?: number): number;
 type InputSettings = {
   selectOnEdit: boolean;
 };
@@ -15,6 +15,18 @@ type BoundFeedbackState = {
   overflow: number;
   source: BoundFeedbackSource;
   tick: number;
+};
+type ScrubSettings = {
+  direction: "horizontal" | "vertical";
+  shiftStep: number;
+  sensitivity: number;
+  threshold?: number;
+  wheelEnabled: boolean;
+  boundFeedback: BoundFeedbackMode;
+  fineStep?: number;
+  fineModifier?: FineModifier;
+  coarseModifier?: CoarseModifier;
+  wheelSensitivity?: number;
 };
 type CalligraphSettings = {
   variant: "number" | "slots";
@@ -54,7 +66,7 @@ type ScrubFieldSettings = {
 };
 declare const DEFAULT_SCRUB_FIELD_SETTINGS: ScrubFieldSettings;
 declare function normalizeScrubFieldSettings(settings: ScrubFieldSettings): ScrubFieldSettings;
-declare function getScrubCursorClass(direction: "horizontal" | "vertical", atBound?: "min" | "max" | null, bounds?: {
+declare function getScrubCursorClass(scrub: Pick<ScrubSettings, "direction">, atBound?: "min" | "max" | null, bounds?: {
   min?: number;
   max?: number;
 }): "cursor-not-allowed" | "cursor-n-resize" | "cursor-s-resize" | "cursor-ns-resize" | "cursor-e-resize" | "cursor-w-resize" | "cursor-ew-resize";
@@ -65,6 +77,7 @@ type ScrubNumberFieldProps = Omit<ComponentProps<"input">, "onChange" | "type" |
   defaultResetValue?: number;
   direction?: "horizontal" | "vertical";
   format?: Intl.NumberFormatOptions;
+  formatValue?: (value: number) => string;
   grouped?: boolean;
   inputSettings?: InputSettings;
   label?: string;
@@ -93,6 +106,7 @@ declare function ScrubNumberField({
   direction,
   disabled,
   format,
+  formatValue: formatValueProp,
   grouped,
   inputSettings,
   label,

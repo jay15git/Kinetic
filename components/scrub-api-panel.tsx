@@ -104,13 +104,13 @@ function ApiAccordionItem({
 function ApiReferenceDetail({ row }: { row: ApiReferenceRow }) {
   return (
     <>
-      <p className="landing-api-accordion-description">{row.description}</p>
-      <div className="landing-api-type-block">
+      <div className="landing-api-accordion-detail-row">
         <span className="landing-api-type-label">Type</span>
         <code className="landing-api-type-value">{row.type}</code>
       </div>
+      <p className="landing-api-accordion-description">{row.description}</p>
       {row.defaultValue ? (
-        <div className="landing-api-type-block">
+        <div className="landing-api-accordion-detail-row">
           <span className="landing-api-type-label">Default</span>
           <code className="landing-api-type-value">{row.defaultValue}</code>
         </div>
@@ -198,11 +198,11 @@ function ApiGestureSectionAccordion({
 function ApiGestureDetail({ row }: { row: ApiGestureRow }) {
   return (
     <>
-      <p className="landing-api-accordion-description">{row.result}</p>
-      <div className="landing-api-type-block">
+      <div className="landing-api-accordion-detail-row">
         <span className="landing-api-type-label">Action</span>
         <code className="landing-api-type-value">{row.action}</code>
       </div>
+      <p className="landing-api-accordion-description">{row.result}</p>
     </>
   )
 }

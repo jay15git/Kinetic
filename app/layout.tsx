@@ -19,6 +19,41 @@ export const metadata: Metadata = {
   title: "Kinetic — Scrub Number Input for React",
   description:
     "Drag-to-scrub number input with animated digits. A shadcn registry component for React.",
+  icons: {
+    icon: [
+      {
+        url: "/icons/icon-light.png",
+        media: "(prefers-color-scheme: light)",
+        type: "image/png",
+        sizes: "32x32",
+      },
+      {
+        url: "/icons/icon-dark.png",
+        media: "(prefers-color-scheme: dark)",
+        type: "image/png",
+        sizes: "32x32",
+      },
+      {
+        url: "/icons/icon-light.png",
+        type: "image/png",
+        sizes: "32x32",
+      },
+    ],
+    apple: [
+      {
+        url: "/apple-icon/light",
+        media: "(prefers-color-scheme: light)",
+        type: "image/png",
+        sizes: "180x180",
+      },
+      {
+        url: "/apple-icon/dark",
+        media: "(prefers-color-scheme: dark)",
+        type: "image/png",
+        sizes: "180x180",
+      },
+    ],
+  },
 }
 
 export default function RootLayout({

@@ -121,8 +121,24 @@
 }
 
 .landing-title-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 36px;
   color: inherit;
   text-decoration: none;
+}
+
+.landing-title-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .landing-title-link {
+    font-size: 30px;
+  }
 }
 
 .landing-title-link:hover .landing-title {
@@ -863,8 +879,15 @@
 .landing-api-accordion-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   padding: 0 0 10px;
+}
+
+.landing-api-accordion-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
 }
 
 .landing-api-accordion-description {

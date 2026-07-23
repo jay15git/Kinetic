@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Star } from "lucide-react"
 
+import { BrandHandMoveIcon } from "@/components/brand-hand-move-icon"
 import { LandingNavLink } from "@/components/landing-nav-link"
 
 const GITHUB_URL = "https://github.com/jay15git/kinetic"
@@ -15,6 +16,7 @@ export function LandingHeader({ stars }: { stars?: number | null }) {
   return (
     <header className="landing-header">
       <Link href="/" className="landing-title-link">
+        <BrandHandMoveIcon className="landing-title-icon shrink-0" aria-hidden />
         <h1 className="landing-title">Kinetic</h1>
       </Link>
       <div className="landing-header-actions">
